@@ -4,54 +4,55 @@ def Enumerater(*str_list: str) -> dict[str, int]:
 
 token: dict[str, int] = Enumerater(
     # Spesial Form
-    "+",
-    "-",
-    "*",
-    "/",
-    "not",
-    "=",
-    "%",
-    "==",
-    "!=",
-    ">",
-    "<",
-    ">=",
-    "<=",
-    "and",
-    "or",
-    "+=",
-    "-=",
-    "*=",
-    "/=",
-    "%=",
-    ".",
-    "[",
-    "]",
-    "{",
-    "}",
-    "(",
-    ")",
-    " ",
-    "\n",
-    "\\",
-    '"',
-    "'",
-    "if",
-    "elif",
-    "else",
-    "for",
-    "in",
-    "while",
-    "return",
-    "yeild",
-    "def",
-    "unknown",
-    "pass",
-    ":",
+    "PLUS",         # +
+    "MINUS",        # -
+    "MULTIPLY",     # *
+    "DIVIDE",       # /
+    "NOT",          # not
+    "EQUAL",        # =
+    "MODULO",       # %
+    "DMULTIPLY",    # **
+    "DEQUAL",       # ==
+    "NEQUAL",       # !=
+    "LESS",         # <
+    "GREATER",      # >
+    "LEQUAL",       # <=
+    "GEQUAL",       # >=
+    "AND",          # and
+    "OR",           # or
+    "PEQUAL",       # +=
+    "MEQUAL",       # -=
+    "MULEQUAL",     # *=
+    "DIVEQUAL",     # /=
+    "MODULEQUAL",   # %=
+    "DOT",          # .
+    "LSQB",         # [
+    "RSQB",         # ]
+    "LBRACE",       # {
+    "RBRACE"        # }
+    "LPAREN",       # (
+    "RPAREN",       # )
+    "SPACE",        # space
+    "EOL",          # \n
+    "BSLASH",       # \
+    'QMARK',        # "
+    "APOSTROPHE",   # '
+    "IF",           # if
+    "ELIF",         # elif
+    "ELSE",         # else
+    "FOR",          # for
+    "IN",           # in
+    "WHILE",        # while
+    "RETURN",       # return
+    "YEILD",        # yeild
+    "DEF",          # def
+    "UNKNOWN",      #
+    "PASS",         # pass, ...
+    "COLON",        # :
     # General Form
-    "decimal",
-    "number",
-    "string",
-    "identifier",
-    "indent",
+    "DECIMAL",      # 0-9
+    "NUMBER",       # 0-9
+    "STRING",       # a-z, A-Z
+    "IDENTIFIER",   #
+    "INDENT",       # tap
 )
