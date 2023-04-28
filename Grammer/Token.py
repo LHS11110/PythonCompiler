@@ -2,7 +2,7 @@ def Enumerater(*str_list: str) -> dict[str, int]:
     return {str_list[idx]: idx for idx in range(len(str_list))}
 
 
-Token: dict[str, int] = Enumerater(
+token: dict[str, int] = Enumerater(
     # Operator Tokens
     "+",
     "-",
@@ -41,4 +41,6 @@ Token: dict[str, int] = Enumerater(
     "return",
     "yeild",
     "def",
+    "Unknown",
+    "pass",
 )
