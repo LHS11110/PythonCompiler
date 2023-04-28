@@ -1,4 +1,4 @@
-def Enumerater(*str_list: tuple[str]) -> dict[str, int]:
+def Enumerater(*str_list: str) -> dict[str, int]:
     return {str_list[idx]: idx for idx in range(len(str_list))}
 
 
