@@ -41,8 +41,10 @@ FOR             for
 IN              in
 WHILE           while
 RETURN          return
+CONTINUE        continue
 YIELD           yield
 DEF             def
+BOOL            False|True
 COLON           :
 NUMBER          \d+(\.\d*)?
 PIPE            \|>
