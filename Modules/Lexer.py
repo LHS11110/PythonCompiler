@@ -51,7 +51,8 @@ class Lexer:
             for pattern, token_type in Lexer.Pattern():
                 match: Optional[Match[Any]] = re.match(pattern, input_text[pos:])
                 if match:
-                    tokens.append((token_type, match.group()))
+                    if token_type != "SPACE":
+                        tokens.append((token_type, match.group()))
                     pos += len(match.group())
                     break
             else:
@@ -60,4 +61,4 @@ class Lexer:
 
 
 if __name__ == "__main__":
-    print(Lexer().tokenize('print("Hello, World")'))
+    print(Lexer().tokenize('    print("Hello, World")'))
