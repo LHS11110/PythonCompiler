@@ -1,31 +1,40 @@
-from Grammer import Token
-from typing import Optional
-from enum import Enum
+from collections.abc import Iterator
+from typing import Any, Optional
+import Token
 import re
+from re import Match
 
 
 class Lexer:
-    class Pattern(Enum):
-        NUMBER: tuple[str, str] = (r"\d+(\.\d*)?", "NUMBER")
-        PLUS = (r"\+", "PLUS")
-        MINUS = (r"\-", "MINUS")
-        DMULTIPLY = (r"\*\*", "DMULTIPLY")
-        MULTIPLY = (r"\*", "MULTIPLY")
-        DIVIDE = (r"\/", "DIVIDE")
-        LPAREN = (r"\(", "LPAREN")
-        RPAREN = (r"\)", "RPAREN")
-        LSQB = (r"\[", "LSQB")
-        RSQB = (r"\]", "RSQB")
-        SPACE = (r"\s+", "SPACE")
-        DOT = (r"\.", "DOT")
-        EQUAL = (r"\=", "EQUAL")
+    class Pattern:
+        def __init__(self) -> None:
+            self.idx: int = 0
+            self.patterns: list[tuple[str, str]] = [
+                (p, n)
+                for n, p in [
+                    line.split()
+                    for line in open("Modules/tokens.txt", "r").read().split("\n")
+                ]
+            ]
+
+            identifier_pattern: str = ""
+            for p, _ in self.patterns:
+                match: Optional[Match[Any]] = re.match(r"[a-zA-Z]+", p)
+                if match:
+                    identifier_pattern += f"^{match.group()}+\\w+|"
+            identifier_pattern = identifier_pattern[:-1]
+            self.patterns.insert(0, (identifier_pattern, "IDENTIFIER"))
+            self.patterns.append((r"\w+", "IDENTIFIER"))
+
+        def __iter__(self) -> Iterator[tuple[str, str]]:
+            return self.patterns.__iter__()
 
     @staticmethod
     def getTokenValue(string: str) -> int:
         if string not in Token.token.keys():
             return Token.token["unknown"]
         return Token.token[string]
-    
+
     def __init__(self):
         pass
 
@@ -34,16 +43,12 @@ class Lexer:
         pos: int = 0
         length: int = len(input_text)
         while pos < length:
-            for pattern, token_type in Lexer.Pattern:
-                match: Optional[str] = re.match(pattern, input_text[pos:])
+            for pattern, token_type in Lexer.Pattern():
+                match: Optional[Match[Any]] = re.match(pattern, input_text[pos:])
                 if match:
-                    tokens.append((token_type, match.group(0)))
-                    pos += len(match.group(0))
+                    tokens.append((token_type, match.group()))
+                    pos += len(match.group())
                     break
             else:
                 raise ValueError(f"Unexpected character at position {pos}")
         return tokens
-    
-input_text: str = "3.14 ** 512312321315241231233213123"
-lexer: Lexer = Lexer()
-print(lexer.tokenize(input_text=input_text))
