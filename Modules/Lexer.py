@@ -35,9 +35,9 @@ class Lexer:
     @staticmethod
     def getTokenValue(string: str) -> int:
         if not Token.token:
-            return -1
+            raise ValueError("Token.token is None")
         if string not in Token.token.keys():
-            return Token.token["unknown"]
+            raise ValueError("string not in Token.token.keys")
         return Token.token[string]
 
     def __init__(self):
