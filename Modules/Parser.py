@@ -7,3 +7,4 @@ class state:
     LoopState: bool = False
     IfState: bool = False
     IndentState: int = 0
+    ExprState: bool = False
