@@ -60,4 +60,4 @@ class Lexer:
 
 
 if __name__ == "__main__":
-    print(Lexer().tokenize("False True Falseasdf Trueasdf"))
+    print(Lexer().tokenize('print("Hello, World")'))
