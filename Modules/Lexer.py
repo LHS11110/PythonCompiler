@@ -19,16 +19,6 @@ class Lexer:
                 ]
             ]
 
-            identifier_pattern: str = ""
-            for p, _ in self.patterns:
-                for _p in p.split("|"):
-                    match: Optional[Match[Any]] = re.match(r"[a-zA-Z]+", _p)
-                    if match:
-                        identifier_pattern += f"^{match.group()}+\\w+|"
-            identifier_pattern = identifier_pattern[:-1]
-            self.patterns.insert(0, (identifier_pattern, "IDENTIFIER"))
-            self.patterns.append((r"\w+", "IDENTIFIER"))
-
         def __iter__(self) -> Iterator[tuple[str, str]]:
             return self.patterns.__iter__()
 
@@ -48,15 +38,22 @@ class Lexer:
         pos: int = 0
         length: int = len(input_text)
         while pos < length:
+            match_list: list[tuple[str, str]] = []
             for pattern, token_type in Lexer.Pattern():
                 match: Optional[Match[Any]] = re.match(pattern, input_text[pos:])
-                if match:
-                    if token_type != "SPACE":
-                        tokens.append((token_type, match.group()))
-                    pos += len(match.group())
-                    break
-            else:
+                if not match:
+                    continue
+                match_list.append((token_type, match.group()))
+            if not match_list:
                 raise ValueError(f"Unexpected character at position {pos}")
+            token: tuple[str, str] = match_list[0]
+            for another_token in match_list[1:]:
+                if len(token[1]) < len(another_token[1]):
+                    token = another_token
+            pos += len(token[1])
+            if token[0] != "SPACE":
+                tokens.append(token)
+
         return tokens
 
 
