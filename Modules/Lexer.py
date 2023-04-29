@@ -56,4 +56,6 @@ class Lexer:
 
 if __name__ == "__main__":
     input_text: str = input("input code : ")
-    print(Lexer().tokenize(input_text=input_text))
+
+    for token_type, txt in Lexer().tokenize(input_text=input_text):
+        print(token_type, txt, Lexer.getTokenValue(token_type))
