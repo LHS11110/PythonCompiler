@@ -5,9 +5,6 @@ import re
 from re import Match
 
 
-import re
-
-
 class Lexer:
     class Pattern:
         def __init__(self) -> None:
