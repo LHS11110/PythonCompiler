@@ -8,7 +8,7 @@ MINUS           \-
 DMULTIPLY       \*\*
 MULTIPLY        \*
 DIVIDE          \/
-PASS            pass
+PASS            pass|[.][.][.]
 NOT             not
 DEQUAL          \=\=
 NEQUAL          \!\=
