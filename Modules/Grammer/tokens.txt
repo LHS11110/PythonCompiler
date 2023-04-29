@@ -55,4 +55,5 @@ CLASS           class
 TYPE            int|str|float|list|set|dict|tuple|bool
 BTYPE           byte|word|dword|qword
 NONE            None
+STATIC          static
 IDENTIFIER      [a-zA-Z]+[a-zA-Z0-9]*
