@@ -17,6 +17,7 @@ MODULO          \%
 LEQUAL          \<\=
 GEQUAL          \>\=
 LESS            \<
+COMPOSITION     >>
 GREATER         \>
 AND             and
 OR              or
@@ -45,4 +46,3 @@ DEF             def
 COLON           :
 NUMBER          \d+(\.\d*)?
 PIPE            \|>
-COMPOSITION     >>

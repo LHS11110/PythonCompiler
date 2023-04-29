@@ -57,4 +57,4 @@ class Lexer:
 
 
 if __name__ == "__main__":
-    print(Lexer().tokenize("f |> g"))
+    print(Lexer().tokenize("f > g"))
