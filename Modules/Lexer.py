@@ -60,4 +60,8 @@ class Lexer:
 
 
 if __name__ == "__main__":
+<<<<<<< Updated upstream
     print(Lexer().tokenize("asdf"))
+=======
+    print(Lexer().tokenize("True False Truea Falsec"))
+>>>>>>> Stashed changes
