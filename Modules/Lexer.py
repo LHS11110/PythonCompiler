@@ -61,4 +61,4 @@ class Lexer:
 
 
 if __name__ == "__main__":
-    print(Lexer().tokenize('    print("Hello, World")'))
+    print(Lexer().tokenize('    print("Hello, World") import abc struct abc'))
