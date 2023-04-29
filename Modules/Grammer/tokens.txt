@@ -52,3 +52,5 @@ PIPE            \|>
 STRUCT          struct
 IMPORT          import
 CLASS           class
+TYPE            int|str|float|list|set|dict|tuple|bool
+BTYPE           byte|word|dword|qword
