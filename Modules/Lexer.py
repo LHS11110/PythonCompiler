@@ -44,8 +44,6 @@ class Lexer:
         pass
 
     def tokenize(self, input_text: str) -> list[tuple[str, str]]:
-        print(self.Pattern().patterns)
-
         tokens: list[tuple[str, str]] = []
         pos: int = 0
         length: int = len(input_text)
@@ -56,10 +54,10 @@ class Lexer:
                     tokens.append((token_type, match.group()))
                     pos += len(match.group())
                     break
-                else:
-                    raise ValueError(f"Unexpected character at position {pos}")
+            else:
+                raise ValueError(f"Unexpected character at position {pos}")
         return tokens
 
 
 if __name__ == "__main__":
-    print(Lexer().tokenize("asdf"))
+    print(Lexer().tokenize("False True Falseasdf Trueasdf"))
