@@ -50,3 +50,4 @@ NUMBER          \d+(\.\d*)?
 STRING          ".*"|'.*'
 PIPE            \|>
 STRUCT          struct
+IMPORT          import
