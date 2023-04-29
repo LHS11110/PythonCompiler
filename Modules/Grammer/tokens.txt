@@ -22,6 +22,7 @@ GREATER         \>
 AND             and
 OR              or
 DOT             \.
+COMMA           ,
 LSQB            \[
 RSQB            \]
 LBRACE          \{
@@ -32,8 +33,6 @@ EOL             \n
 INDENT          \s{4}
 SPACE           \s+
 BSLASH          \\
-QMARK           \"
-APOSTROPHE      \'
 IF              if
 ELIF            elif
 ELSE            else
@@ -42,9 +41,11 @@ IN              in
 WHILE           while
 RETURN          return
 CONTINUE        continue
+RAISE           raise
 YIELD           yield
 DEF             def
 BOOL            False|True
 COLON           :
 NUMBER          \d+(\.\d*)?
+STRING          ".*"|'.*'
 PIPE            \|>
