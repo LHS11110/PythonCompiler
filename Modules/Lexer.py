@@ -13,7 +13,9 @@ class Lexer:
                 (p, n)
                 for n, p in [
                     line.split()
-                    for line in open("Modules/tokens.txt", "r").read().split("\n")
+                    for line in open("Modules/Grammer/tokens.txt", "r")
+                    .read()
+                    .split("\n")
                 ]
             ]
 
@@ -52,3 +54,7 @@ class Lexer:
             else:
                 raise ValueError(f"Unexpected character at position {pos}")
         return tokens
+
+
+if __name__ == "__main__":
+    print(Lexer().tokenize("f |> g"))
