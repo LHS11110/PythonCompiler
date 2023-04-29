@@ -8,7 +8,7 @@ MINUS           \-
 DMULTIPLY       \*\*
 MULTIPLY        \*
 DIVIDE          \/
-PASS            pass|[.][.][.]
+PASS            pass|\.\.\.
 NOT             not
 DEQUAL          \=\=
 NEQUAL          \!\=
@@ -54,3 +54,4 @@ IMPORT          import
 CLASS           class
 TYPE            int|str|float|list|set|dict|tuple|bool
 BTYPE           byte|word|dword|qword
+IDENTIFIER      [a-zA-Z]+[a-zA-Z0-9]*
