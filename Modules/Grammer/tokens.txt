@@ -51,3 +51,4 @@ STRING          ".*"|'.*'
 PIPE            \|>
 STRUCT          struct
 IMPORT          import
+CLASS           class
