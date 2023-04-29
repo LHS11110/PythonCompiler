@@ -13,3 +13,4 @@ class state:
     FuncSet: set[str] = set()
     VarSet: set[str] = set()
     StructSet: set[str] = set()
+    StaticVarSet: set[str] = set()
