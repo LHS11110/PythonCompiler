@@ -47,7 +47,7 @@ DEF             def
 BOOL            False|True
 COLON           :
 NUMBER          \d+(\.\d*)?
-STRING          ".*"|'.*'
+STRING          "{3}[^"{3}]*"{3}|"[^"]*"|'[^']*'
 PIPE            \|>
 STRUCT          struct
 IMPORT          import
