@@ -61,4 +61,5 @@ class Lexer:
 
 
 if __name__ == "__main__":
-    print(Lexer().tokenize('    print("Hello, World") import abc struct abc'))
+    input_text: str = input("input code : ")
+    print(Lexer().tokenize(input_text=input_text))
