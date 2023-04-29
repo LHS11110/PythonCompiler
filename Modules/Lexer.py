@@ -13,7 +13,9 @@ class Lexer:
                 (p, n)
                 for n, p in [
                     line.split()
-                    for line in open("Modules/tokens.txt", "r").read().split("\n")
+                    for line in open("Modules/Grammer/tokens.txt", "r")
+                    .read()
+                    .split("\n")
                 ]
             ]
 
