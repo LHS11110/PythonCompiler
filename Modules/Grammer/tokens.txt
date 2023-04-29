@@ -44,4 +44,5 @@ YIELD           yield
 DEF             def
 COLON           :
 NUMBER          \d+(\.\d*)?
-COMPOSITION     \|>
+PIPE            \|>
+COMPOSITION     >>
