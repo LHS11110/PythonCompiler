@@ -21,9 +21,10 @@ class Lexer:
 
             identifier_pattern: str = ""
             for p, _ in self.patterns:
-                match: Optional[Match[Any]] = re.match(r"[a-zA-Z]+", p)
-                if match:
-                    identifier_pattern += f"^{match.group()}+\\w+|"
+                for _p in p.split("|"):
+                    match: Optional[Match[Any]] = re.match(r"[a-zA-Z]+", _p)
+                    if match:
+                        identifier_pattern += f"^{match.group()}+\\w+|"
             identifier_pattern = identifier_pattern[:-1]
             self.patterns.insert(0, (identifier_pattern, "IDENTIFIER"))
             self.patterns.append((r"\w+", "IDENTIFIER"))
@@ -33,6 +34,8 @@ class Lexer:
 
     @staticmethod
     def getTokenValue(string: str) -> int:
+        if not Token.token:
+            return -1
         if string not in Token.token.keys():
             return Token.token["unknown"]
         return Token.token[string]
