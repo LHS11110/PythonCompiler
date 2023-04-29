@@ -49,3 +49,4 @@ COLON           :
 NUMBER          \d+(\.\d*)?
 STRING          ".*"|'.*'
 PIPE            \|>
+STRUCT          struct
