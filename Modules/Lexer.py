@@ -9,15 +9,12 @@ class Lexer:
     class Pattern:
         def __init__(self) -> None:
             self.idx: int = 0
-            self.patterns: list[tuple[str, str]] = [
-                (p, n)
-                for n, p in [
-                    line.split()
-                    for line in open("Modules/Grammer/tokens.txt", "r")
-                    .read()
-                    .split("\n")
+            self.patterns: list[tuple[str, str]] = []
+            with open("Modules/Grammer/tokens.txt", "r") as file:
+                self.patterns = [
+                    (p, n)
+                    for n, p in [line.split() for line in file.read().split("\n")]
                 ]
-            ]
 
         def __iter__(self) -> Iterator[tuple[str, str]]:
             return self.patterns.__iter__()
