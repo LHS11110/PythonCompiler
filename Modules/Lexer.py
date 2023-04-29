@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 from typing import Any, Optional
-import Token
+from Grammer import Token
 import re
 from re import Match
 

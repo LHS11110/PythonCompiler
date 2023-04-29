@@ -6,7 +6,8 @@ token: dict[str, int] = Enumerater(
     *[
         n
         for n, _ in [
-            line.split() for line in open("Modules/tokens.txt", "r").read().split("\n")
+            line.split()
+            for line in open("Modules/Grammer/tokens.txt", "r").read().split("\n")
         ]
     ]
 )
