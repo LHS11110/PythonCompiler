@@ -21,8 +21,8 @@ class Lexer:
 
             identifier_pattern: str = ""
             for p, _ in self.patterns:
-                for p2 in p.split("|"):
-                    match: Optional[Match[Any]] = re.match(r"[a-zA-Z]+", p2)
+                for _p in p.split("|"):
+                    match: Optional[Match[Any]] = re.match(r"[a-zA-Z]+", _p)
                     if match:
                         identifier_pattern += f"^{match.group()}+\\w+|"
             identifier_pattern = identifier_pattern[:-1]
