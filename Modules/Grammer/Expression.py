@@ -15,8 +15,8 @@ class Expression:
         tree["Type"] = "Call"
         tree["Name"] = codes[idx][1]
         idx += 1
-        tree["argument"], idx = Expression.isTuple(codes=codes, idx=idx)
-        tree["argument"] = tree["argument"]["elements"]
+        tree["arguments"], idx = Expression.isTuple(codes=codes, idx=idx)
+        tree["arguments"] = tree["arguments"]["elements"]
 
         return (tree, idx)
 
