@@ -7,7 +7,7 @@ print(
     test()                      , add(),
         div(),
     mul(add(),
-        add()), ()
+        add()), (print(), test1())
 )
 """
 
