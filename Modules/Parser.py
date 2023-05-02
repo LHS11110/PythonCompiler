@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -11,13 +11,13 @@ class state:
     DefState: bool = False
     EndOfLineState: bool = False  #
 
-    ClassSet: set[str] = set()
-    FuncSet: set[str] = set()
-    VarSet: set[str] = set()
-    StructSet: set[str] = set()
-    StaticVarSet: set[str] = set()
+    ClassSet: set[str] = field(default_factory=set)
+    FuncSet: set[str] = field(default_factory=set)
+    VarSet: set[str] = field(default_factory=set)
+    StructSet: set[str] = field(default_factory=set)
+    StaticVarSet: set[str] = field(default_factory=set)
 
-    FuncStack: list[str] = []
+    FuncStack: list[str] = field(default_factory=list)
 
 
 class Parser:
