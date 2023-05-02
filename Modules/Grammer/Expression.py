@@ -35,6 +35,7 @@ class Expression:
 
             elif not count % 2:  # 전달인자 검사
                 expr_tuple: tuple[dict[str, Any], int] = ({}, idx)
+                check_idx: int = idx
                 for method in Expression().check_list:
                     try:
                         expr, _idx = method(codes, idx)
@@ -43,7 +44,7 @@ class Expression:
                         idx = _idx
                     except:
                         pass
-                if expr_tuple[1] == idx:
+                if check_idx == idx:
                     raise SyntaxError()
                 tree["elements"].append(expr_tuple[0])  # type: ignore
                 count += 1
@@ -79,7 +80,7 @@ class Expression:
                     except:
                         pass
                 if check_idx == idx:
-                    break
+                    raise SyntaxError()
                 tree["elements"].append(expr_tuple[0])  # type: ignore
                 count += 1
 
