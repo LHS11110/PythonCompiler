@@ -5,7 +5,7 @@ class Expression:
     def __init__(self) -> None:
         self.check_list: list[
             Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
-        ] = [Expression.isCall, Expression.isTuple]
+        ] = [Expression.isCall, Expression.isTuple, Expression.isEnum]
 
     @staticmethod
     def isCall(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
@@ -34,17 +34,16 @@ class Expression:
                 idx += 1
 
             elif not count % 2:  # 전달인자 검사
-                expr_tuple: tuple[dict[str, Any], int] = ({}, -1)
+                expr_tuple: tuple[dict[str, Any], int] = ({}, idx)
                 for method in Expression().check_list:
                     try:
                         expr, _idx = method(codes, idx)
                         if _idx > expr_tuple[1]:
                             expr_tuple = (expr, _idx)
                         idx = _idx
-                        break
                     except:
                         pass
-                if expr_tuple[1] == -1:
+                if expr_tuple[1] == idx:
                     raise SyntaxError()
                 tree["elements"].append(expr_tuple[0])  # type: ignore
                 count += 1
@@ -57,3 +56,37 @@ class Expression:
                 count += 1
 
         return (tree, idx + 1)
+
+    @staticmethod
+    def isEnum(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        tree["Type"] = "Enum"
+        tree["elements"] = []
+        count: int = 0  # 구분자와 표현식의 순서를 파악하는데 사용할 변수
+        while True:
+            if codes[idx][0] == "INDENT":  # INDENT는 무시
+                idx += 1
+
+            elif not count % 2:  # 표현식 검사
+                expr_tuple: tuple[dict[str, Any], int] = ({}, 0)
+                check_idx: int = idx
+                for method in Expression().check_list:
+                    try:
+                        expr, _idx = method(codes, idx)
+                        if _idx > expr_tuple[1]:
+                            expr_tuple = (expr, _idx)
+                        idx = _idx
+                    except:
+                        pass
+                if check_idx == idx:
+                    break
+                tree["elements"].append(expr_tuple[0])  # type: ignore
+                count += 1
+
+            elif count % 2 and codes[idx][0] != "COMMA":  # 구분자 검사
+                break
+
+            else:  # 구분자가 올바르다면
+                idx += 1
+                count += 1
+        return (tree, idx)
