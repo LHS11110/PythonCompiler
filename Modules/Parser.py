@@ -22,20 +22,21 @@ class state:
 
 class Parser:
     def __init__(self) -> None:
-        self._state: state = state()
+        pass
 
     def cleanup(self, codes: list[tuple[str, str]]) -> list[tuple[str, str]]:
         result: list[tuple[str, str]] = []
-        self._state.EndOfLineState = True
+        _state: state = state()
+        _state.EndOfLineState = True
         for code in codes:
-            if code[0] == "INDENT" and self._state.EndOfLineState:
+            if code[0] == "INDENT" and _state.EndOfLineState:
                 result.append(code)
             elif code[0] == "EOL":
                 result.append(code)
-                self._state.EndOfLineState = True
+                _state.EndOfLineState = True
             elif code[0] != "INDENT":
                 result.append(code)
-                self._state.EndOfLineState = False
+                _state.EndOfLineState = False
         return result
 
     def isEndOfLine(self, codes: list[tuple[str, str]]) -> bool:
