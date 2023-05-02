@@ -12,9 +12,9 @@ print(
 """
 
 print(
-    Parser.Parser().clean(Lexer.Lexer().tokenize(input_text=input_txt))[
+    Parser.Parser().cleanup(Lexer.Lexer().tokenize(input_text=input_txt))[
         Expression.Expression().isCall(
-            Parser.Parser().clean(Lexer.Lexer().tokenize(input_text=input_txt)),
+            Parser.Parser().cleanup(Lexer.Lexer().tokenize(input_text=input_txt)),
             1,
         )[1] :
     ],
@@ -23,7 +23,7 @@ print(
 
 print(
     Expression.Expression().isCall(
-        Parser.Parser().clean(Lexer.Lexer().tokenize(input_text=input_txt)),
+        Parser.Parser().cleanup(Lexer.Lexer().tokenize(input_text=input_txt)),
         1,
     )
 )
