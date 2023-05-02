@@ -34,16 +34,19 @@ class Expression:
                 idx += 1
 
             elif not count % 2:  # 전달인자 검사
+                expr_tuple: tuple[dict[str, Any], int] = ({}, -1)
                 for method in Expression().check_list:
                     try:
                         expr, _idx = method(codes, idx)
-                        tree["elements"].append(expr)  # type: ignore
+                        if _idx > expr_tuple[1]:
+                            expr_tuple = (expr, _idx)
                         idx = _idx
                         break
                     except:
                         pass
-                else:  # 매칭되는 전달인자가 없다면
+                if expr_tuple[1] == -1:
                     raise SyntaxError()
+                tree["elements"].append(expr_tuple[0])  # type: ignore
                 count += 1
 
             elif count % 2 and codes[idx][0] != "COMMA":  # 구분자 검사
