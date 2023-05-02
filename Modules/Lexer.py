@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 from typing import Any, Optional
-from Grammer import Token
+from Modules.Grammer import Token
 import re
 from re import Match
 
@@ -11,10 +11,11 @@ class Lexer:
             self.idx: int = 0
             self.patterns: list[tuple[str, str]] = []
             with open("Modules/Grammer/tokens.txt", "r") as file:
-                self.patterns = [
-                    (p, n)
-                    for n, p in [line.split() for line in file.read().split("\n")]
+                patterns: list[list[str]] = [
+                    line.split() for line in file.read().split("\n")
                 ]
+            for pattern in patterns:
+                self.patterns.append((" ".join(pattern[1:]), pattern[0]))
 
         def __iter__(self) -> Iterator[tuple[str, str]]:
             return self.patterns.__iter__()
