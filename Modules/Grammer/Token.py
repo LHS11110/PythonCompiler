@@ -8,6 +8,8 @@ def Enumerater(*str_list: str) -> dict[str, int]:
 token: Optional[dict[str, int]] = None
 
 with open("Modules/Grammer/tokens.txt", "r") as file:
-    token = Enumerater(
-        *[n for n, _ in [line.split() for line in file.read().split("\n")]]
-    )
+    patterns: list[list[str]] = [line.split() for line in file.read().split("\n")]
+    pattern_list: list[str] = []
+    for pattern in patterns:
+        pattern_list.append(pattern[0])
+    token = Enumerater(*pattern_list)
