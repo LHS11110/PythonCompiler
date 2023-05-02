@@ -30,8 +30,8 @@ RBRACE          \}
 LPAREN          \(
 RPAREN          \)
 EOL             \n
-INDENT          \s{4}
-SPACE           \s+
+INDENT          [ ]{4}
+SPACE           [ ]{,3}
 BSLASH          \\
 IF              if
 ELIF            elif
