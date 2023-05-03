@@ -31,7 +31,7 @@ LPAREN          \(
 RPAREN          \)
 EOL             \n
 INDENT          [ ]{4}
-SPACE           [ ]{,3}
+SPACE           [ ]{1,3}
 BSLASH          \\
 IF              if
 ELIF            elif
@@ -47,7 +47,7 @@ DEF             def
 BOOL            False|True
 COLON           :
 NUMBER          \d+(\.\d*)?
-STRING          "{3}[^"{3}]*"{3}|"[^"]*"|'[^']*'
+STRING          "{3}[^"{3}]*"{3}|"[^"\n]*"|'[^'\n]*'
 PIPE            \|>
 STRUCT          struct
 IMPORT          import
