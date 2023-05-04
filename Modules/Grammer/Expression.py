@@ -1,19 +1,29 @@
-from typing import Callable, Any, Optional
+from typing import Callable, Any
 
 
 class Expression:
+    class_names: list[str] = []
+    container_names: list[str] = []
+
     def __init__(self) -> None:
         pass
 
     @staticmethod
-    def getElement(
+    def checkElement(
         codes: list[tuple[str, str]],
         idx: int,
         check_list: list[
             Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
         ],
     ) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Matched Expression
+        int: End Index
+        """
         expr_tuple: tuple[dict[str, Any], int] = ({}, 0)  # 표현식과 인덱스를 담을 튜플
+
         for method in check_list:
             try:
                 expr, _idx = method(codes, idx)
@@ -28,7 +38,17 @@ class Expression:
         return expr_tuple
 
     @staticmethod
+    def checkType(obj_type: str, check_list: list[str]) -> bool:
+        return True if obj_type in check_list else False
+
+    @staticmethod
     def getCall(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Call, Name=Function Name, Arguments=Elements
+        int: End Index
+        """
         tree: dict[str, Any] = {}
         if codes[idx][0] != "IDENTIFIER":
             raise SyntaxError()
@@ -37,11 +57,18 @@ class Expression:
         idx += 1
         tree["Arguments"], idx = Expression.getTuple(codes=codes, idx=idx)
         tree["Arguments"] = tree["Arguments"]["Elements"]
-
+        if codes[idx][0] == "RARROW":
+            pass
         return (tree, idx)
 
     @staticmethod
     def getTuple(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Tuple, Elements=Objects
+        int: End Index
+        """
         tree: dict[str, Any] = {}
         if codes[idx][0] != "LPAREN":
             raise SyntaxError()
@@ -54,7 +81,7 @@ class Expression:
                 idx += 1
 
             elif not count % 2:  # 전달인자 검사
-                element, idx = Expression.getElement(
+                element, idx = Expression.checkElement(
                     codes=codes,
                     idx=idx,
                     check_list=[
@@ -64,6 +91,7 @@ class Expression:
                         Expression.getSet,
                         Expression.getList,
                         Expression.getLiteral,
+                        Expression.getTernaryOper,
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -80,6 +108,12 @@ class Expression:
 
     @staticmethod
     def getSet(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Set, Elements=Objects
+        int: End Index
+        """
         tree: dict[str, Any] = {}
         if codes[idx][0] != "LBRACE":
             raise SyntaxError()
@@ -92,7 +126,7 @@ class Expression:
                 idx += 1
 
             elif not count % 2:
-                element, idx = Expression.getElement(
+                element, idx = Expression.checkElement(
                     codes=codes,
                     idx=idx,
                     check_list=[
@@ -102,6 +136,7 @@ class Expression:
                         Expression.getSet,
                         Expression.getList,
                         Expression.getLiteral,
+                        Expression.getTernaryOper,
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -118,6 +153,12 @@ class Expression:
 
     @staticmethod
     def getList(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=List, Elements=Objects
+        int: End Index
+        """
         tree: dict[str, Any] = {}
         if codes[idx][0] != "LSQB":
             raise SyntaxError()
@@ -130,7 +171,7 @@ class Expression:
                 idx += 1
 
             elif not count % 2:
-                element, idx = Expression.getElement(
+                element, idx = Expression.checkElement(
                     codes=codes,
                     idx=idx,
                     check_list=[
@@ -140,6 +181,7 @@ class Expression:
                         Expression.getSet,
                         Expression.getList,
                         Expression.getLiteral,
+                        Expression.getTernaryOper,
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -156,6 +198,12 @@ class Expression:
 
     @staticmethod
     def getEnum(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Enum, Elements=Objects
+        int: End Index
+        """
         tree: dict[str, Any] = {}
         tree["Type"] = "Enum"
         tree["Elements"] = []
@@ -167,7 +215,7 @@ class Expression:
 
             elif not count % 2:
                 try:
-                    element, idx = Expression.getElement(
+                    element, idx = Expression.checkElement(
                         codes=codes,
                         idx=idx,
                         check_list=[
@@ -177,6 +225,7 @@ class Expression:
                             Expression.getSet,
                             Expression.getList,
                             Expression.getLiteral,
+                            Expression.getTernaryOper,
                         ],
                     )
                     tree["Elements"].append(element)  # type: ignore
@@ -196,6 +245,12 @@ class Expression:
 
     @staticmethod
     def getVar(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Var, Name=Variable Name
+        int: End Index
+        """
         if codes[idx][0] != "IDENTIFIER":
             raise SyntaxError()
         tree: dict[str, Any] = {}
@@ -207,6 +262,12 @@ class Expression:
     def getLiteral(
         codes: list[tuple[str, str]], idx: int
     ) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Literal, Value=Literal Value
+        int: End Index
+        """
         if codes[idx][0] not in ["NUMBER", "STRING"]:
             raise SyntaxError()
         tree: dict[str, Any] = {}
@@ -214,3 +275,36 @@ class Expression:
         tree["Value"] = codes[idx][1]
 
         return (tree, idx + 1)
+
+    @staticmethod
+    def getTernaryOper(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        """
+        Returns
+        -------
+        Dict[str, Any]: Type=Ternary Operator, isTrue, isFalse
+        int: End Index
+        """
+        tree: dict[str, Any] = {}
+        tree["isTrue"], idx = Expression.checkElement(
+            codes=codes,
+            idx=idx,
+            check_list=[
+                Expression.getCall,
+                Expression.getExpr,
+                Expression.getList,
+                Expression.getLiteral,
+                Expression.getSet,
+                Expression.getTuple,
+                Expression.getVar,
+                Expression.getTernaryOper,
+            ],
+        )
+        tree["Type"] = "TernaryOperator"
+
+    @staticmethod
+    def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        literal: Callable[
+            [], tuple[dict[str, Any], int]
+        ] = lambda: Expression.getLiteral(codes=codes, idx=idx)

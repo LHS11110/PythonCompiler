@@ -20,6 +20,9 @@ class Lexer:
         def __iter__(self) -> Iterator[tuple[str, str]]:
             return self.patterns.__iter__()
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def getTokenValue(string: str) -> int:
         if not Token.token:
@@ -28,10 +31,8 @@ class Lexer:
             raise ValueError("string not in Token.token.keys")
         return Token.token[string]
 
-    def __init__(self):
-        pass
-
-    def tokenize(self, input_text: str) -> list[tuple[str, str]]:
+    @staticmethod
+    def tokenize(input_text: str) -> list[tuple[str, str]]:
         tokens: list[tuple[str, str]] = []
         pos: int = 0
         length: int = len(input_text)
@@ -58,5 +59,5 @@ class Lexer:
 if __name__ == "__main__":
     input_text: str = input("input code : ")
 
-    for token_type, txt in Lexer().tokenize(input_text=input_text):
+    for token_type, txt in Lexer.tokenize(input_text=input_text):
         print(token_type, txt, Lexer.getTokenValue(token_type))

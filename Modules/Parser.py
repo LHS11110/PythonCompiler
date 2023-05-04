@@ -24,7 +24,8 @@ class Parser:
     def __init__(self) -> None:
         pass
 
-    def cleanup(self, codes: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    @staticmethod
+    def cleanup(codes: list[tuple[str, str]]) -> list[tuple[str, str]]:
         result: list[tuple[str, str]] = []
         _state: state = state()
         _state.EndOfLineState = True
@@ -39,5 +40,6 @@ class Parser:
                 _state.EndOfLineState = False
         return result
 
-    def isEndOfLine(self, codes: list[tuple[str, str]]) -> bool:
+    @staticmethod
+    def isEndOfLine(codes: list[tuple[str, str]]) -> bool:
         return codes[-1][0] == "EOL"

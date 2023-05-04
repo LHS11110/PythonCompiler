@@ -5,9 +5,9 @@ input_txt = """for ((123, "Hello, World!"), ()), (add(), print), ({ar}), [hi()] 
 """
 
 print(
-    Parser.Parser().cleanup(Lexer.Lexer().tokenize(input_text=input_txt))[
-        Expression.Expression().getEnum(
-            Parser.Parser().cleanup(Lexer.Lexer().tokenize(input_text=input_txt)),
+    Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt))[
+        Expression.Expression.getEnum(
+            Parser.Parser.cleanup(Lexer.Lexer().tokenize(input_text=input_txt)),
             1,
         )[1] :
     ],
@@ -15,8 +15,8 @@ print(
 )
 
 print(
-    Expression.Expression().getEnum(
-        Parser.Parser().cleanup(Lexer.Lexer().tokenize(input_text=input_txt)),
+    Expression.Expression.getEnum(
+        Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt)),
         1,
     )
 )

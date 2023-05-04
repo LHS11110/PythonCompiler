@@ -19,6 +19,7 @@ GEQUAL          >=
 LESS            <
 COMPOSITION     >>
 GREATER         >
+RARROW          \->
 AND             and
 OR              or
 DOT             \.
