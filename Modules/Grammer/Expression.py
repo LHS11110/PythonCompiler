@@ -22,7 +22,7 @@ class Expression:
         Dict[str, Any]: Matched Expression
         int: End Index
         """
-        expr_tuple: tuple[dict[str, Any], int] = ({}, 0)  # 표현식과 인덱스를 담을 튜플
+        expr_tuple: tuple[dict[str, Any], int] = ({}, -1)  # 표현식과 인덱스를 담을 튜플
 
         for method in check_list:
             try:
@@ -32,7 +32,7 @@ class Expression:
                 idx = _idx
             except:
                 pass
-        if expr_tuple[1] == 0:  # 매칭될 수 없는 경우
+        if expr_tuple[1] == -1:  # 매칭될 수 없는 경우
             raise SyntaxError()
 
         return expr_tuple
