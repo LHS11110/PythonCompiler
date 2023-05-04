@@ -75,12 +75,12 @@ class Expression:
         idx += 1
         tree["Type"] = "Tuple"
         tree["Elements"] = []
-        count: int = 0  # 구분자와 전달인자의 순서를 파악하는데 사용할 변수
+        count: int = 0  # 구분자와 표현식의 순서를 파악하는데 사용할 변수
         while codes[idx][0] != "RPAREN":
             if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":  # EOL과 INDENT는 무시
                 idx += 1
 
-            elif not count % 2:  # 전달인자 검사
+            elif not count % 2:  # 표현식 검사
                 element, idx = Expression.checkElement(
                     codes=codes,
                     idx=idx,
