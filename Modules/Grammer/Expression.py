@@ -29,8 +29,7 @@ class Expression:
                 expr, _idx = method(codes, idx)
                 if _idx > expr_tuple[1]:  # 표현식이 더 많이 매칭된 경우
                     expr_tuple = (expr, _idx)
-                idx = _idx
-            except:
+            except:  # 매칭될 수 없는 경우
                 pass
         if expr_tuple[1] == -1:  # 매칭될 수 없는 경우
             raise SyntaxError()
@@ -268,7 +267,7 @@ class Expression:
         Dict[str, Any]: Type=Literal, Value=Literal Value
         int: End Index
         """
-        if codes[idx][0] not in ["NUMBER", "STRING"]:
+        if codes[idx][0] not in ["NUMBER", "STRING", "BOOL"]:
             raise SyntaxError()
         tree: dict[str, Any] = {}
         tree["Type"] = "Literal"
@@ -283,25 +282,54 @@ class Expression:
         """
         Returns
         -------
-        Dict[str, Any]: Type=Ternary Operator, isTrue, isFalse
+        Dict[str, Any]: Type=Ternary Operator, isTrue, isFalse, ConditionalExpr
         int: End Index
         """
         tree: dict[str, Any] = {}
+        tree["Type"] = "TernaryOperator"
         tree["isTrue"], idx = Expression.checkElement(
             codes=codes,
             idx=idx,
             check_list=[
                 Expression.getCall,
-                Expression.getExpr,
                 Expression.getList,
                 Expression.getLiteral,
                 Expression.getSet,
                 Expression.getTuple,
                 Expression.getVar,
-                Expression.getTernaryOper,
             ],
         )
-        tree["Type"] = "TernaryOperator"
+        if codes[idx][0] != "IF":
+            raise SyntaxError()
+        idx += 1
+        tree["ConditionalExpr"], idx = Expression.checkElement(
+            codes=codes,
+            idx=idx,
+            check_list=[
+                Expression.getCall,
+                Expression.getList,
+                Expression.getLiteral,
+                Expression.getSet,
+                Expression.getTuple,
+                Expression.getVar,
+            ],
+        )
+        if codes[idx][0] != "ELSE":
+            raise SyntaxError()
+        idx += 1
+        tree["isFalse"], idx = Expression.checkElement(
+            codes=codes,
+            idx=idx,
+            check_list=[
+                Expression.getCall,
+                Expression.getList,
+                Expression.getLiteral,
+                Expression.getSet,
+                Expression.getTuple,
+                Expression.getVar,
+            ],
+        )
+        return (tree, idx)
 
     @staticmethod
     def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
