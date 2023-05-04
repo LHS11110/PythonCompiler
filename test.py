@@ -1,7 +1,7 @@
 from Modules import Parser, Lexer
 from Modules.Grammer import Expression
 
-input_txt = """for ((123, "Hello, World!"), ()), (add(), print), ({ar}), [hi()] in
+input_txt = """for ((123, "Hello, World!"), ()), (add(), print), ({ar}), [hi()], 123 if True else 321 in
 """
 
 print(
