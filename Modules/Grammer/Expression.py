@@ -333,6 +333,10 @@ class Expression:
 
     @staticmethod
     def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-        literal: Callable[
-            [], tuple[dict[str, Any], int]
-        ] = lambda: Expression.getLiteral(codes=codes, idx=idx)
+        state: int = 0  # 0: 리터럴|식별자|함수 호출, 1: 삼항 연산자, 2: 이항 연산자, 3: 단항 연산자
+        tree: dict[str, Any] = {}
+        tree["Type"] = "Expression"
+        stack: list[str] = []
+        while True:
+            pass
+        return (tree, idx)
