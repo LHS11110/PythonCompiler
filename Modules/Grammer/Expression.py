@@ -31,7 +31,7 @@ class Expression:
                     expr_tuple = (expr, _idx)
             except:  # 매칭될 수 없는 경우
                 pass
-        if expr_tuple[1] == -1:  # 매칭될 수 없는 경우
+        if expr_tuple[1] == -1:  # 모두 매칭될 수 없는 경우
             raise SyntaxError()
 
         return expr_tuple
@@ -49,14 +49,14 @@ class Expression:
         int: End Index
         """
         tree: dict[str, Any] = {}
-        if codes[idx][0] != "IDENTIFIER":
+        if codes[idx][0] != "IDENTIFIER":  # 식별자 검사
             raise SyntaxError()
         tree["Type"] = "Call"
         tree["Name"] = codes[idx][1]
         idx += 1
-        tree["Arguments"], idx = Expression.getTuple(codes=codes, idx=idx)
+        tree["Arguments"], idx = Expression.getTuple(codes=codes, idx=idx)  # 전달인자 검사
         tree["Arguments"] = tree["Arguments"]["Elements"]
-        if codes[idx][0] == "RARROW":
+        if codes[idx][0] == "RARROW":  # 반환 타입이 온다면
             pass
         return (tree, idx)
 
@@ -69,13 +69,13 @@ class Expression:
         int: End Index
         """
         tree: dict[str, Any] = {}
-        if codes[idx][0] != "LPAREN":
+        if codes[idx][0] != "LPAREN":  # '(' 검사
             raise SyntaxError()
         idx += 1
         tree["Type"] = "Tuple"
         tree["Elements"] = []
-        count: int = 0  # 구분자와 표현식의 순서를 파악하는데 사용할 변수
-        while codes[idx][0] != "RPAREN":
+        count: int = 0  # 구분자와 표현식 순서를 파악하는데 사용할 변수
+        while codes[idx][0] != "RPAREN":  # ')'가 온다면
             if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":  # EOL과 INDENT는 무시
                 idx += 1
 
@@ -84,13 +84,12 @@ class Expression:
                     codes=codes,
                     idx=idx,
                     check_list=[
-                        Expression.getCall,
-                        Expression.getTuple,
-                        Expression.getVar,
-                        Expression.getSet,
-                        Expression.getList,
-                        Expression.getLiteral,
-                        Expression.getTernaryOper,
+                        Expression.getCall,  # 함수 호출
+                        Expression.getTuple,  # 튜플 자료형
+                        Expression.getVar,  # 변수
+                        Expression.getSet,  # 집합 자료형
+                        Expression.getList,  # 리스트 자료형
+                        Expression.getLiteral,  # 리터럴
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -102,6 +101,11 @@ class Expression:
             else:  # 구분자가 올바르다면
                 idx += 1
                 count += 1
+
+        # 괄호로 둘러싸인 계산식이라면
+        if len(tree["Elements"]) == 1:
+            if tree["Elements"][0]["Type"] == "Expression":
+                return (tree["Elements"][0], idx + 1)
 
         return (tree, idx + 1)
 
@@ -135,7 +139,6 @@ class Expression:
                         Expression.getSet,
                         Expression.getList,
                         Expression.getLiteral,
-                        Expression.getTernaryOper,
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -180,7 +183,6 @@ class Expression:
                         Expression.getSet,
                         Expression.getList,
                         Expression.getLiteral,
-                        Expression.getTernaryOper,
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -224,7 +226,6 @@ class Expression:
                             Expression.getSet,
                             Expression.getList,
                             Expression.getLiteral,
-                            Expression.getTernaryOper,
                         ],
                     )
                     tree["Elements"].append(element)  # type: ignore
@@ -332,8 +333,16 @@ class Expression:
         return (tree, idx)
 
     @staticmethod
-    def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-        state: int = 0  # 0: 리터럴|식별자|함수 호출, 1: 삼항 연산자, 2: 이항 연산자, 3: 단항 연산자
+    def getUnaryOper(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        if codes[idx][0] == "NOT":
+            pass
+
+    @staticmethod
+    def getBinaryOper(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
         tree: dict[str, Any] = {}
         tree["Type"] = "Expression"
         stack: list[str] = []
