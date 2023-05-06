@@ -1,24 +1,22 @@
 from Modules import Parser, Lexer
 from Modules.Grammer import Expression
+from Modules.Grammer import Container
 
-input_txt: str = """for (add(), print), ({ar}), [hi()], 123 if True else 321 in
-"""
+input_txt: str = "[:]\n"
 
 print(
     Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt))[
-        Expression.Expression.getEnum(
+        Expression.Expression.getIndexing(
             Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt)),
-            1,
+            0,
         )[1] :
     ],
     end="\n\n",
 )
 
 print(
-    Expression.Expression.getEnum(
+    Expression.Expression.getIndexing(
         Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt)),
-        1,
+        0,
     )
 )
-
-print(not True or True)
