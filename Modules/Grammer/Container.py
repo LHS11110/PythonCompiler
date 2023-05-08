@@ -1,6 +1,7 @@
 from typing import Any, TYPE_CHECKING
 import Modules.Grammer.Checker as Checker
 import Modules.Grammer.Expression as Expression
+import Modules.Grammer.Object as Object
 
 
 class Container:
@@ -17,16 +18,18 @@ class Container:
         while codes[idx][0] != "RPAREN":  # ')'가 온다면
             if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":  # EOL과 INDENT는 무시
                 idx += 1
-
             elif not count % 2:  # 표현식 검사
                 element, idx = Checker.Checker.codeMatch(
                     codes=codes,
                     idx=idx,
                     match_list=[
+                        Object.Object.getVar,
+                        Object.Object.getLiteral,
                         Expression.Expression.getExpr,
                         Container.getTuple,  # 튜플 자료형
                         Container.getSet,  # 집합 자료형
                         Container.getList,  # 리스트 자료형
+                        Container.getDict,  # 사전 자료형
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -60,10 +63,13 @@ class Container:
                     codes=codes,
                     idx=idx,
                     match_list=[
+                        Object.Object.getVar,
+                        Object.Object.getLiteral,
                         Expression.Expression.getExpr,
                         Container.getTuple,  # 튜플 자료형
                         Container.getSet,  # 집합 자료형
                         Container.getList,  # 리스트 자료형
+                        Container.getDict,  # 사전 자료형
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -97,10 +103,13 @@ class Container:
                     codes=codes,
                     idx=idx,
                     match_list=[
+                        Object.Object.getVar,
+                        Object.Object.getLiteral,
                         Expression.Expression.getExpr,
                         Container.getTuple,  # 튜플 자료형
                         Container.getSet,  # 집합 자료형
                         Container.getList,  # 리스트 자료형
+                        Container.getDict,  # 사전 자료형
                     ],
                 )
                 tree["Elements"].append(element)  # type: ignore
@@ -133,10 +142,13 @@ class Container:
                         codes=codes,
                         idx=idx,
                         match_list=[
+                            Object.Object.getVar,
+                            Object.Object.getLiteral,
                             Expression.Expression.getExpr,
                             Container.getTuple,  # 튜플 자료형
                             Container.getSet,  # 집합 자료형
                             Container.getList,  # 리스트 자료형
+                            Container.getDict,  # 사전 자료형
                         ],
                     )
                     tree["Elements"].append(element)  # type: ignore
@@ -153,3 +165,34 @@ class Container:
         if error_idx == idx:
             raise SyntaxError()
         return (tree, idx)
+
+    def getDict(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        if codes[idx][0] != "LBRACE":
+            raise SyntaxError()
+        idx += 1
+        tree["Type"] = "Container"
+        tree["ObjectType"] = "Dict"
+        tree["Elements"] = []
+        count: int = 0
+        while codes[idx][0] != "RBRACE":
+            if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":
+                idx += 1
+
+            elif not count % 2:
+                element, idx = Checker.Checker.codeMatch(
+                    codes=codes,
+                    idx=idx,
+                    match_list=[Object.Object.getKeyAndValue],
+                )
+                tree["Elements"].append(element)  # type: ignore
+                count += 1
+
+            elif count % 2 and codes[idx][0] != "COMMA":
+                raise SyntaxError()
+
+            else:
+                idx += 1
+                count += 1
+
+        return (tree, idx + 1)
