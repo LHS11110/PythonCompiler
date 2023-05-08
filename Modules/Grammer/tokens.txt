@@ -7,6 +7,7 @@ PLUS            \+
 MINUS           \-
 DMULTIPLY       \*\*
 MULTIPLY        \*
+FLOORDIV        //
 DIVIDE          /
 PASS            pass|\.\.\.
 NOT             not
@@ -16,8 +17,9 @@ EQUAL           =
 MODULO          %
 LEQUAL          <=
 GEQUAL          >=
+LBITSHIFT       <<
 LESS            <
-COMPOSITION     >>
+RBITSHIFT       >>
 GREATER         >
 RARROW          \->
 AND             and
@@ -30,6 +32,9 @@ LBRACE          \{
 RBRACE          \}
 LPAREN          \(
 RPAREN          \)
+BITAND          &
+BITOR           \|
+BITXOR          \^
 EOL             \n
 INDENT          [ ]{4}
 SPACE           [ ]{1,3}
@@ -39,6 +44,9 @@ ELIF            elif
 ELSE            else
 FOR             for
 IN              in
+NOTIN           not in
+IS              is
+ISNOT           is not
 WHILE           while
 RETURN          return
 CONTINUE        continue
