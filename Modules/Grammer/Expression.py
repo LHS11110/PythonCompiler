@@ -5,43 +5,12 @@ from Modules.Grammer.Container import Container
 
 
 # 연산자 우선순위
-priority: dict[str, int] = {
-    "Object": 1,
-    "Container": 1,
-    "Indexing": 2,
-    "Slicing": 2,
-    "Call": 2,
-    "MemberAccess": 2,
-    "DMULTIPLY": 4,
-    "UNARY_MINUS": 5,
-    "UNARY_PLUS": 5,
-    "UNARY_NOT": 5,
-    "MULTIPLY": 6,
-    "DIVIDE": 6,
-    "FLOORDIV": 6,
-    "MODULO": 6,
-    "PLUS": 7,
-    "MINUS": 7,
-    "RBITSHIFT": 8,
-    "LBITSHIFT": 8,
-    "BITAND": 9,
-    "BITXOR": 10,
-    "BITOR": 11,
-    "IN": 12,
-    "NOTIN": 12,
-    "IS": 12,
-    "ISNOT": 12,
-    "LESS": 12,
-    "GREATER": 12,
-    "LEQUAL": 12,
-    "GEQUAL": 12,
-    "NEQUAL": 12,
-    "DEQUAL": 12,
-    "NOT": 13,
-    "AND": 14,
-    "OR": 15,
-    "TERNARY_OP": 16,
-}
+priority: dict[str, int] = {}
+with open("Modules/Grammer/priority.txt", "r") as file:
+    for key, value in [
+        line.split() for line in [line for line in file.read().split("\n")]
+    ]:
+        priority[key] = int(value)
 
 
 class Expression:
@@ -66,7 +35,8 @@ class Expression:
             raise SyntaxError()
         idx += 1
         tree: dict[str, Any] = {}
-        tree["Type"] = "Indexing"
+        tree["Type"] = "Expression"
+        tree["ObjectType"] = "Indexing"
         tree["Elements"] = []
         count: int = 0
         while codes[idx][0] != "RSQB":
@@ -115,7 +85,8 @@ class Expression:
             raise SyntaxError()
         idx += 1
         tree: dict[str, Any] = {}
-        tree["Type"] = "MemberAccess"
+        tree["Type"] = "Expression"
+        tree["ObjectType"] = "MemberAccess"
         tree["Member"], idx = Checker.codeMatch(
             codes=codes, idx=idx, match_list=[Object.getVar]
         )
@@ -123,8 +94,110 @@ class Expression:
         return (tree, idx)
 
     @staticmethod
+    def getCall(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        expr, idx = Checker.codeMatch(
+            codes=codes, idx=idx, match_list=[Container.getTuple]
+        )
+        tree["Type"] = "Expression"
+        tree["ObjectType"] = "Call"
+        tree["Arguments"] = expr["Elements"]
+        return (tree, idx)
+
+    @staticmethod
+    def getUnaryOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        if codes[idx][0] not in ["MINUS", "PLUS", "NOT"]:
+            raise SyntaxError()
+        tree: dict[str, Any] = {}
+        tree["Type"] = "Expression"
+        tree["ObjectType"] = (
+            "NOT" if codes[idx][0] == "NOT" else "UNARY_" + codes[idx][0]
+        )
+        return (tree, idx + 1)
+
+    @staticmethod
+    def getBinaryOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        if codes[idx][0] not in [
+            "DMULTIPLY",
+            "MULTIPLY",
+            "DIVIDE",
+            "FLOORDIV",
+            "MODULO",
+            "PLUS",
+            "MINUS",
+            "RBITSHIFT",
+            "LBITSHIFT",
+            "AND",
+            "OR",
+            "BITAND",
+            "BITOR",
+            "BITXOR",
+            "IN",
+            "NOTIN",
+            "IS",
+            "ISNOT",
+            "LESS",
+            "GREATER",
+            "LEQUAL",
+            "GEQUAL",
+            "NEQUAL",
+            "DEQUAL",
+        ]:
+            raise SyntaxError()
+        tree: dict[str, Any] = {}
+        tree["Type"] = "Expression"
+        tree["ObjectType"] = codes[idx][0]
+        return (tree, idx + 1)
+
+    @staticmethod
+    def getTernaryOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        if codes[idx][0] != "IF":
+            raise SyntaxError()
+        idx += 1
+        tree: dict[str, Any] = {}
+        tree["Type"] = "Expression"
+        tree["ObjectType"] = "TERNARY_OP"
+        tree["Mid"], idx = Checker.codeMatch(
+            codes=codes,
+            idx=idx,
+            match_list=[
+                Object.getLiteral,
+                Object.getVar,
+                Expression.getExpr,
+                Container.getDict,
+                Container.getList,
+                Container.getSet,
+                Container.getTuple,
+            ],
+        )
+        if codes[idx][0] != "ELSE":
+            raise SyntaxError()
+        return (tree, idx + 1)
+
+    @staticmethod
+    def getAnotherOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        tree, idx = Checker.codeMatch(
+            codes=codes,
+            idx=idx,
+            match_list=[
+                Expression.getCall,
+                Expression.getIndexing,
+                Expression.getMemberAccess,
+            ],
+        )
+        return (tree, idx)
+
+    @staticmethod
     def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-        stack: list[str] = []
+        stack: list[dict[str, Any]] = []
         tree: dict[str, Any] = {}
 
         return (tree, idx)
