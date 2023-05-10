@@ -166,6 +166,7 @@ class Container:
             raise SyntaxError()
         return (tree, idx)
 
+    @staticmethod
     def getDict(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
         tree: dict[str, Any] = {}
         if codes[idx][0] != "LBRACE":
