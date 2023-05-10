@@ -11,7 +11,7 @@ class Container:
         if codes[idx][0] != "LPAREN":  # '(' 검사
             raise SyntaxError()
         idx += 1
-        tree["Type"] = "Container"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "Tuple"
         tree["Elements"] = []
         count: int = 0  # 구분자와 표현식 순서를 파악하는데 사용할 변수
@@ -50,7 +50,7 @@ class Container:
         if codes[idx][0] != "LBRACE":
             raise SyntaxError()
         idx += 1
-        tree["Type"] = "Container"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "Set"
         tree["Elements"] = []
         count: int = 0
@@ -90,7 +90,7 @@ class Container:
         if codes[idx][0] != "LSQB":
             raise SyntaxError()
         idx += 1
-        tree["Type"] = "Container"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "List"
         tree["Elements"] = []
         count: int = 0
@@ -127,7 +127,7 @@ class Container:
     @staticmethod
     def getEnum(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
         tree: dict[str, Any] = {}
-        tree["Type"] = "Container"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "Enum"
         tree["Elements"] = []
         count: int = 0
@@ -172,7 +172,7 @@ class Container:
         if codes[idx][0] != "LBRACE":
             raise SyntaxError()
         idx += 1
-        tree["Type"] = "Container"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "Dict"
         tree["Elements"] = []
         count: int = 0
