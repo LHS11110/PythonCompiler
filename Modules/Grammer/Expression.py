@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING
+from typing import Any
 from Modules.Grammer.Checker import Checker
 from Modules.Grammer.Object import Object
 from Modules.Grammer.Container import Container
