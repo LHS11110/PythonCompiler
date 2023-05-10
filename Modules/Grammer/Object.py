@@ -10,7 +10,7 @@ class Object:
         if codes[idx][0] != "IDENTIFIER":
             raise SyntaxError()
         tree: dict[str, Any] = {}
-        tree["Type"] = "Object"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "Var"
         tree["Name"] = codes[idx][1]
         return (tree, idx + 1)
@@ -22,7 +22,7 @@ class Object:
         if codes[idx][0] not in ["NUMBER", "STRING", "BOOL"]:
             raise SyntaxError()
         tree: dict[str, Any] = {}
-        tree["Type"] = "Object"
+        tree["Category"] = "Object"
         tree["ObjectType"] = codes[idx][0]
         tree["Value"] = codes[idx][1]
 
@@ -33,7 +33,7 @@ class Object:
         codes: list[tuple[str, str]], idx: int
     ) -> tuple[dict[str, Any], int]:
         tree: dict[str, Any] = {}
-        tree["Type"] = "Object"
+        tree["Category"] = "Object"
         tree["ObjectType"] = "KeyAndValue"
         expr, idx = Checker.Checker.codeMatch(
             codes=codes,
