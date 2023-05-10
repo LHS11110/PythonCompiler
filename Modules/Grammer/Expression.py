@@ -35,7 +35,7 @@ class Expression:
             raise SyntaxError()
         idx += 1
         tree: dict[str, Any] = {}
-        tree["Type"] = "Expression"
+        tree["Category"] = "Expression"
         tree["ObjectType"] = "Indexing"
         tree["Elements"] = []
         count: int = 0
@@ -45,7 +45,7 @@ class Expression:
 
             elif not count % 2:
                 if codes[idx][0] == "COLON":  # 슬라이싱에서 객체가 생략됬다면
-                    tree["Elements"].append({"Type": "Empty"})  # type: ignore
+                    tree["Elements"].append({})  # type: ignore
                 else:
                     element, idx = Checker.codeMatch(
                         codes=codes,
@@ -70,11 +70,11 @@ class Expression:
                 idx += 1
                 count += 1
         if not count % 2:  # 마지막 객체가 생략됬다면
-            tree["Elements"].append({"Type": "Empty"})  # type: ignore
+            tree["Elements"].append({})  # type: ignore
         if len(tree["Elements"]) == 0 or len(tree["Elements"]) > 3:
             raise SyntaxError()
         if len(tree["Elements"]) > 1:
-            tree["Type"] = "Slicing"
+            tree["Category"] = "Slicing"
         return (tree, idx + 1)
 
     @staticmethod
@@ -85,7 +85,7 @@ class Expression:
             raise SyntaxError()
         idx += 1
         tree: dict[str, Any] = {}
-        tree["Type"] = "Expression"
+        tree["Category"] = "Expression"
         tree["ObjectType"] = "MemberAccess"
         tree["Member"], idx = Checker.codeMatch(
             codes=codes, idx=idx, match_list=[Object.getVar]
@@ -99,7 +99,7 @@ class Expression:
         expr, idx = Checker.codeMatch(
             codes=codes, idx=idx, match_list=[Container.getTuple]
         )
-        tree["Type"] = "Expression"
+        tree["Category"] = "Expression"
         tree["ObjectType"] = "Call"
         tree["Arguments"] = expr["Elements"]
         return (tree, idx)
@@ -111,7 +111,7 @@ class Expression:
         if codes[idx][0] not in ["MINUS", "PLUS", "NOT"]:
             raise SyntaxError()
         tree: dict[str, Any] = {}
-        tree["Type"] = "Expression"
+        tree["Category"] = "Expression"
         tree["ObjectType"] = (
             "NOT" if codes[idx][0] == "NOT" else "UNARY_" + codes[idx][0]
         )
@@ -149,7 +149,7 @@ class Expression:
         ]:
             raise SyntaxError()
         tree: dict[str, Any] = {}
-        tree["Type"] = "Expression"
+        tree["Category"] = "Expression"
         tree["ObjectType"] = codes[idx][0]
         return (tree, idx + 1)
 
@@ -161,7 +161,7 @@ class Expression:
             raise SyntaxError()
         idx += 1
         tree: dict[str, Any] = {}
-        tree["Type"] = "Expression"
+        tree["Category"] = "Expression"
         tree["ObjectType"] = "TERNARY_OP"
         tree["Mid"], idx = Checker.codeMatch(
             codes=codes,
