@@ -1,13 +1,13 @@
 from Modules import Parser, Lexer
-from Modules.Grammer import Expression
-from Modules.Grammer import Container
-from Modules.Grammer import Object
+from Modules.Grammer.Expression import Expression
+from Modules.Grammer.Container import Container
+from Modules.Grammer.Object import Object
 
-input_txt: str = "[123::] \n"
+input_txt: str = '{123: 123, "asd": 312} \n'
 
 print(
     Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt))[
-        Expression.Expression.getAnotherOp(
+        Container.getDict(
             Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt)),
             0,
         )[1] :
@@ -16,7 +16,7 @@ print(
 )
 
 print(
-    Expression.Expression.getAnotherOp(
+    Container.getDict(
         Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt)),
         0,
     )
