@@ -45,7 +45,7 @@ class Expression:
 
             elif not count % 2:
                 if codes[idx][0] == "COLON":  # 슬라이싱에서 객체가 생략됬다면
-                    tree["Elements"].append({"Type": "Empty"})
+                    tree["Elements"].append({"Type": "Empty"})  # type: ignore
                 else:
                     element, idx = Checker.codeMatch(
                         codes=codes,
@@ -60,7 +60,7 @@ class Expression:
                             Container.getDict,
                         ],
                     )
-                    tree["Elements"].append(element)
+                    tree["Elements"].append(element)  # type: ignore
                 count += 1
 
             elif count % 2 and codes[idx][0] != "COLON":
@@ -70,7 +70,7 @@ class Expression:
                 idx += 1
                 count += 1
         if not count % 2:  # 마지막 객체가 생략됬다면
-            tree["Elements"].append({"Type": "Empty"})
+            tree["Elements"].append({"Type": "Empty"})  # type: ignore
         if len(tree["Elements"]) == 0 or len(tree["Elements"]) > 3:
             raise SyntaxError()
         if len(tree["Elements"]) > 1:
