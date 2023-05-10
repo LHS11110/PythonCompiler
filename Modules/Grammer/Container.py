@@ -16,9 +16,7 @@ class Container:
         tree["Elements"] = []
         count: int = 0  # 구분자와 표현식 순서를 파악하는데 사용할 변수
         while codes[idx][0] != "RPAREN":  # ')'가 온다면
-            if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":  # EOL과 INDENT는 무시
-                idx += 1
-            elif not count % 2:  # 표현식 검사
+            if not count % 2:  # 표현식 검사
                 element, idx = Checker.Checker.codeMatch(
                     codes=codes,
                     idx=idx,
@@ -55,10 +53,7 @@ class Container:
         tree["Elements"] = []
         count: int = 0
         while codes[idx][0] != "RBRACE":
-            if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":
-                idx += 1
-
-            elif not count % 2:
+            if not count % 2:
                 element, idx = Checker.Checker.codeMatch(
                     codes=codes,
                     idx=idx,
@@ -95,10 +90,7 @@ class Container:
         tree["Elements"] = []
         count: int = 0
         while codes[idx][0] != "RSQB":
-            if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":
-                idx += 1
-
-            elif not count % 2:
+            if not count % 2:
                 element, idx = Checker.Checker.codeMatch(
                     codes=codes,
                     idx=idx,
@@ -177,10 +169,7 @@ class Container:
         tree["Elements"] = []
         count: int = 0
         while codes[idx][0] != "RBRACE":
-            if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":
-                idx += 1
-
-            elif not count % 2:
+            if not count % 2:
                 element, idx = Checker.Checker.codeMatch(
                     codes=codes,
                     idx=idx,
