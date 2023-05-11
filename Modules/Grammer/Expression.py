@@ -5,7 +5,7 @@ from Modules.Grammer.Container import Container
 
 
 # 연산자 우선순위
-priority: dict[str, list[tuple[str, int]]] = {}
+priority: dict[str, list[list[str]]] = {}
 with open("Modules/Grammer/priority.txt", "r") as file:
     category: str = ""
     for line in file.read().split("\n"):
@@ -15,7 +15,10 @@ with open("Modules/Grammer/priority.txt", "r") as file:
             priority[category] = []
         elif len(line_list) == 2:
             key, value = line_list
-            priority[category].append((key, int(value)))
+            priority[category].append((key, value))
+        elif len(line_list) == 3:
+            key, next_syntax, value = line_list
+            priority[category].append((key, next_syntax, value))
 
 
 class Expression:
@@ -69,7 +72,9 @@ class Expression:
         if len(tree["Elements"]) == 0 or len(tree["Elements"]) > 3:
             raise SyntaxError()
         if len(tree["Elements"]) > 1:
-            tree["Category"] = "Slicing"
+            if len(tree["Elements"]) == 2:
+                tree["Elements"].append({})
+            tree["ObjectType"] = "Slicing"
         return (tree, idx + 1)
 
     @staticmethod
@@ -96,18 +101,93 @@ class Expression:
         )
         tree["Category"] = "Expression"
         tree["ObjectType"] = "Call"
-        tree["Arguments"] = expr["Elements"]
+        tree["Elements"] = expr["Elements"]
         return (tree, idx)
 
     @staticmethod
     def getTernaryOp(
         codes: list[tuple[str, str]], idx: int
     ) -> tuple[dict[str, Any], int]:
-        pass
+        tree: dict[str, Any] = {}
+        tree["Category"] = "Expression"
+        tree["ObjectType"] = "TernaryOp"
+        for op, next_syntax, _priority in priority["TernaryOperator"]:
+            if codes[idx][0] == op:
+                tree["Op"] = op
+                tree["NextSyntax"] = next_syntax
+                tree["Priority"] = int(_priority)
+                break
+        else:
+            raise SyntaxError()
+
+        return (tree, idx + 1)
+
+    @staticmethod
+    def getBinaryOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        tree["Category"] = "Expression"
+        tree["ObjectType"] = "BinaryOp"
+        for op, _priority in priority["BinaryOperator"]:
+            if codes[idx][0] == op:
+                tree["Op"] = op
+                tree["Priority"] = int(_priority)
+                break
+        else:
+            raise SyntaxError()
+
+        return (tree, idx + 1)
+
+    @staticmethod
+    def getPostUnaryOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        tree["Category"] = "Expression"
+        tree["ObjectType"] = "PostUnaryOp"
+        expr, idx = Checker.codeMatch(
+            codes=codes,
+            idx=idx,
+            match_list=[
+                Expression.getCall,
+                Expression.getIndexing,
+                Expression.getMemberAccess,
+            ],
+        )
+
+        for op, _priority in priority["PostUnaryOperator"]:
+            if expr["ObjectType"] == op:
+                tree["Op"] = op
+                tree["Priority"] = int(_priority)
+                tree["Elements"] = expr["Elements"]
+                break
+        else:
+            raise SyntaxError()
+
+        return (tree, idx + 1)
+
+    @staticmethod
+    def getPreUnaryOp(
+        codes: list[tuple[str, str]], idx: int
+    ) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        tree["Category"] = "Expression"
+        tree["ObjectType"] = "PreUnaryOp"
+        for op, _priority in priority["PreUnaryOperator"]:
+            if codes[idx][0] == op:
+                tree["Op"] = op
+                tree["Priority"] = int(_priority)
+                break
+        else:
+            raise SyntaxError()
+
+        return (tree, idx + 1)
 
     @staticmethod
     def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
         stack: list[dict[str, Any]] = []
         tree: dict[str, Any] = {}
+        syntax_stack: list[str] = []
 
         return (tree, idx)
