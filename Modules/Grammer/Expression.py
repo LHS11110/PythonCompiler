@@ -19,16 +19,6 @@ with open("Modules/Grammer/priority.txt", "r") as file:
 
 
 class Expression:
-    class_names: list[str] = [
-        "int",
-        "float",
-        "str",
-        "list",
-        "tuple",
-        "dict",
-        "set",
-    ]  # 컨테이너 클래스도 포함
-
     def __init__(self) -> None:
         pass
 
