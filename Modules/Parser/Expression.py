@@ -13,7 +13,7 @@ with open("Grammer/priority.txt", "r") as file:
         if len(line_list) == 1:
             category = line_list[0]
             priority[category] = []
-        else:
+        elif len(line_list) > 0:
             priority[category].append(list(value for value in line_list))
 
 
