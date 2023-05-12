@@ -4,7 +4,7 @@ from Modules.Parser.Expression import Expression, priority
 from Modules.Parser.Container import Container
 from Modules.Parser.Object import Object
 
-input_txt: str = "not"
+input_txt: str = "+"
 
 print(
     Parser.Parser.cleanup(Lexer.Lexer.tokenize(input_text=input_txt)),
