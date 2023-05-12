@@ -13,12 +13,8 @@ with open("Grammer/priority.txt", "r") as file:
         if len(line_list) == 1:
             category = line_list[0]
             priority[category] = []
-        elif len(line_list) == 2:
-            key, value = line_list
-            priority[category].append((key, value))
-        elif len(line_list) == 3:
-            key, next_syntax, value = line_list
-            priority[category].append((key, next_syntax, value))
+        else:
+            priority[category].append(list(value for value in line_list))
 
 
 class Expression:
@@ -73,7 +69,7 @@ class Expression:
             raise SyntaxError()
         if len(tree["Elements"]) > 1:
             if len(tree["Elements"]) == 2:
-                tree["Elements"].append({})
+                tree["Elements"].append({})  # type: ignore
             tree["ObjectType"] = "Slicing"
         return (tree, idx + 1)
 
@@ -189,5 +185,7 @@ class Expression:
         stack: list[dict[str, Any]] = []
         tree: dict[str, Any] = {}
         syntax_stack: list[str] = []
+        tree["Category"] = "Expression"
+        tree["ObjectType"] = "Expression"
 
         return (tree, idx)
