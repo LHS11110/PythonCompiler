@@ -1,0 +1,43 @@
+TernaryOperator
+    IF      ELSE        16
+    FOR     IN          16
+
+BinaryOperator
+    DMULTIPLY           4
+    MULTIPLY            6
+    DIVIDE              6
+    FLOORDIV            6
+    MODULO              6
+    PLUS                7
+    MINUS               7
+    RBITSHIFT           8
+    LBITSHIFT           8
+    BITAND              9
+    BITXOR              10
+    BITOR               11
+    IN                  12
+    NOTIN               12
+    IS                  12
+    ISNOT               12
+    LESS                12
+    GREATER             12
+    LEQUAL              12
+    GEQUAL              12
+    NEQUAL              12
+    DEQUAL              12
+    AND                 14
+    OR                  15
+
+PostUnaryOperator
+    Indexing            2
+    Slicing             2
+    Call                2
+    MemberAccess        2
+
+PreUnaryOperator
+    MINUS               5
+    PLUS                5
+    NOT                 13
+
+Operand
+    Object              1
