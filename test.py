@@ -1,7 +1,8 @@
-from Modules import Parser, Lexer
-from Modules.Grammer.Expression import Expression, priority
-from Modules.Grammer.Container import Container
-from Modules.Grammer.Object import Object
+from Modules.Parser import Parser
+from Modules.Lexer import Lexer
+from Modules.Parser.Expression import Expression, priority
+from Modules.Parser.Container import Container
+from Modules.Parser.Object import Object
 
 input_txt: str = "not"
 
