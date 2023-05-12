@@ -1,6 +1,5 @@
 TernaryOperator
     IF      ELSE        16
-    FOR     IN          16
 
 BinaryOperator
     DMULTIPLY           4
