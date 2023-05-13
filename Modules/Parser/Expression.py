@@ -1,7 +1,7 @@
-from typing import Any
-from Modules.Parser import Checker
-from Modules.Parser import Object
-from Modules.Parser import Container
+from typing import Any, Callable
+import Modules.Parser.Checker as Checker
+import Modules.Parser.Container as Container
+import Modules.Parser.Object as Object
 
 
 # 연산자 우선순위
@@ -166,11 +166,99 @@ def getPreUnaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any
     return (tree, idx + 1)
 
 
+def getOperand(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+    tree, idx = Checker.codeMatch(
+        codes=codes,
+        idx=idx,
+        match_list=[*Container.obj_list, Object.getLiteral, Object.getVar],
+    )
+
+    return (tree, idx)
+
+
 def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
     stack: list[dict[str, Any]] = []
     tree: dict[str, Any] = {}
-    syntax_stack: list[str] = []
+    syntax_stack: list[tuple[str, str]] = []
     tree["Category"] = "Expression"
     tree["ObjectType"] = "Expression"
+    tree["ExprList"] = []
+    state: int = 0
+
+    def push(expr: dict[str, Any]):
+        if not len(stack):
+            stack.append(expr)
+        else:
+            while True:
+                if len(stack) == 0:  # 스택이 비었다면
+                    stack.append(expr)
+                    break
+                elif (
+                    stack[-1]["Priority"] <= expr["Priority"]
+                ):  # 이미 들어있는 연산자의 우선순위가 더 높거나 같다면
+                    tree["ExprList"].append(stack[-1])
+                    stack.pop()
+                else:  # 현재 연산자의 우선순위가 더 높다면
+                    stack.append(expr)
+                    break
+
+    while True:
+        if state == 0:
+            try:
+                expr, idx = getPreUnaryOp(codes=codes, idx=idx)
+                stack.append(expr)
+                state = 0
+            except:
+                expr, idx = getOperand(codes=codes, idx=idx)
+                tree["ExprList"].append(expr)  # type: ignore
+                state = 2
+        elif state == 2:
+            if len(syntax_stack) > 0:
+                if codes[idx][0] == syntax_stack[-1][1]:
+                    state = 0
+                    idx += 1
+                    while len(stack) > 0:
+                        if (
+                            syntax_stack[-1][0] == stack[-1]["Op"]
+                        ):  # next_syntax가 prev_syntax를 만날 때까지 나머지 연산자들을 전부 스택에 넣는다.
+                            break
+                        tree["ExprList"].append(stack.pop())  # type: ignore
+                    syntax_stack.pop()
+                    continue
+            try:
+                expr, idx = getPostUnaryOp(codes=codes, idx=idx)
+                push(expr=expr)
+                state = 2
+            except:
+                state = 3
+        elif state == 3:
+            try:
+                expr, idx = getBinaryOp(codes=codes, idx=idx)
+                push(expr=expr)
+            except:
+                try:
+                    expr, idx = getTernaryOp(codes=codes, idx=idx)
+                    push(expr=expr)
+                    syntax_list = [expr["Op"], *expr["NextSyntax"]]
+                    syntax_list = [
+                        (syntax_list[i], syntax_list[i + 1])
+                        for i in range(len(syntax_list) - 1)
+                    ]
+                    for syntax in reversed(syntax_list):
+                        syntax_stack.append(syntax)
+                    expr.pop("NextSyntax")
+                except:
+                    break
+            state = 0
+    for op in reversed(stack):
+        tree["ExprList"].append(op)  # type: ignore
+
+    if len(syntax_stack) != 0:
+        raise SyntaxError()
 
     return (tree, idx)
+
+
+obj_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]] = [
+    getExpr
+]
