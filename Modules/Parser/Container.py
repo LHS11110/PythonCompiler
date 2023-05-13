@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Callable
 import Modules.Parser.Checker as Checker
 import Modules.Parser.Expression as Expression
 import Modules.Parser.Object as Object
@@ -184,3 +184,11 @@ def getDict(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
             count += 1
 
     return (tree, idx + 1)
+
+
+obj_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]] = [
+    getDict,
+    getList,
+    getSet,
+    getTuple,
+]
