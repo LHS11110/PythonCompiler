@@ -55,7 +55,7 @@ YIELD           yield
 DEF             def
 BOOL            False|True
 COLON           :
-NUMBER          \d+(\.\d*)?
+NUMBER          \d+(\.{1}\d+)?
 STRING          "{3}[^"{3}]*"{3}|"[^"\n]*"|'[^'\n]*'
 PIPE            \|>
 STRUCT          struct
