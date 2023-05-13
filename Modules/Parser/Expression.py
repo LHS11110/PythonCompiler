@@ -76,10 +76,8 @@ def getMemberAccess(
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "MemberAccess"
-    tree["Member"], idx = Checker.codeMatch(
-        codes=codes, idx=idx, match_list=[Object.getVar]
-    )
-
+    expr, idx = Checker.codeMatch(codes=codes, idx=idx, match_list=[Object.getVar])
+    tree["Elements"] = [expr["Name"]]
     return (tree, idx)
 
 
@@ -148,7 +146,7 @@ def getPostUnaryOp(
     else:
         raise SyntaxError()
 
-    return (tree, idx + 1)
+    return (tree, idx)
 
 
 def getPreUnaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
@@ -211,8 +209,8 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
             except:
                 expr, idx = getOperand(codes=codes, idx=idx)
                 tree["ExprList"].append(expr)  # type: ignore
-                state = 2
-        elif state == 2:
+                state = 1
+        elif state == 1:
             if len(syntax_stack) > 0:
                 if codes[idx][0] == syntax_stack[-1][1]:
                     state = 0
@@ -228,10 +226,10 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
             try:
                 expr, idx = getPostUnaryOp(codes=codes, idx=idx)
                 push(expr=expr)
-                state = 2
+                state = 1
             except:
-                state = 3
-        elif state == 3:
+                state = 2
+        elif state == 2:
             try:
                 expr, idx = getBinaryOp(codes=codes, idx=idx)
                 push(expr=expr)
@@ -255,7 +253,6 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
 
     if len(syntax_stack) != 0:
         raise SyntaxError()
-
     return (tree, idx)
 
 
