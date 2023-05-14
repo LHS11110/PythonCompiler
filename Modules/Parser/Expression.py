@@ -27,10 +27,7 @@ def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
     tree["Elements"] = []
     count: int = 0
     while codes[idx][0] != "RSQB":
-        if codes[idx][0] == "EOL" or codes[idx][0] == "INDENT":
-            idx += 1
-
-        elif not count % 2:
+        if not count % 2:
             if codes[idx][0] == "COLON":  # 슬라이싱에서 객체가 생략됬다면
                 tree["Elements"].append({})  # type: ignore
             else:
@@ -178,27 +175,28 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     stack: list[dict[str, Any]] = []
     tree: dict[str, Any] = {}
     syntax_stack: list[tuple[str, str]] = []
+    syntax_check_stack: list[str] = []
     tree["Category"] = "Expression"
     tree["ObjectType"] = "Expression"
     tree["ExprList"] = []
     state: int = 0
 
     def push(expr: dict[str, Any]):
-        if not len(stack):
-            stack.append(expr)
-        else:
-            while True:
-                if len(stack) == 0:  # 스택이 비었다면
-                    stack.append(expr)
-                    break
-                elif (
-                    stack[-1]["Priority"] <= expr["Priority"]
-                ):  # 이미 들어있는 연산자의 우선순위가 더 높거나 같다면
-                    tree["ExprList"].append(stack[-1])
-                    stack.pop()
-                else:  # 현재 연산자의 우선순위가 더 높다면
-                    stack.append(expr)
-                    break
+        while True:
+            if len(stack) == 0:  # 스택이 비었다면
+                stack.append(expr)
+                break
+            elif stack[-1]["Op"] == "LPAREN":
+                stack.append(expr)
+                break
+            elif (
+                stack[-1]["Priority"] <= expr["Priority"]
+            ):  # 이미 들어있는 연산자의 우선순위가 더 높거나 같다면
+                tree["ExprList"].append(stack[-1])
+                stack.pop()
+            else:  # 현재 연산자의 우선순위가 더 높다면
+                stack.append(expr)
+                break
 
     while True:
         if state == 0:
@@ -244,7 +242,6 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
                     ]
                     for syntax in reversed(syntax_list):
                         syntax_stack.append(syntax)
-                    expr.pop("NextSyntax")
                 except:
                     break
             state = 0
