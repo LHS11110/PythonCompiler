@@ -5,8 +5,7 @@ import Modules.Parser.Checker as Checker
 
 
 def getVar(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-    if codes[idx][0] != "IDENTIFIER":
-        raise SyntaxError()
+    assert codes[idx][0] == "IDENTIFIER", ""
     tree: dict[str, Any] = {}
     tree["Category"] = "Object"
     tree["ObjectType"] = "Var"
@@ -15,8 +14,7 @@ def getVar(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]
 
 
 def getLiteral(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-    if codes[idx][0] not in ["NUMBER", "STRING", "BOOL"]:
-        raise SyntaxError()
+    assert codes[idx][0] in ["NUMBER", "STRING", "BOOL"], ""
     tree: dict[str, Any] = {}
     tree["Category"] = "Object"
     tree["ObjectType"] = codes[idx][0]
@@ -44,8 +42,7 @@ def getKeyAndValue(
         ],
     )
     tree["Key"] = expr
-    if codes[idx][0] != "COLON":
-        raise SyntaxError()
+    assert codes[idx][0] == "COLON", ""
     idx += 1
     expr, idx = Checker.codeMatch(
         codes=codes,
@@ -81,8 +78,7 @@ def getGenerator(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any]
 
     tree: dict[str, Any] = {}
     tree["Output"] = expr
-    if codes[idx][0] != "FOR":
-        raise SyntaxError()
+    assert codes[idx][0] == "FOR", ""
     idx += 1
     tree["Variables"], idx = Checker.codeMatch(
         codes=codes,
@@ -90,16 +86,14 @@ def getGenerator(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any]
         match_list=[getVar, Container.getTuple, Container.getEnum],
     )
     if tree["Variables"]["ObjectType"] != "Var":
-        if not Checker.typeCheck(
+        assert Checker.typeCheck(
             obj_types=[obj["ObjectType"] for obj in tree["Variables"]["Elements"]],
             type_list=["Var"],
-        ):
-            raise SyntaxError()
+        ), ""
         tree["Variables"] = tree["Variables"]["Elements"]
     else:
         tree["Variables"] = [tree["Variables"]]
-    if codes[idx][0] != "IN":
-        raise SyntaxError()
+    assert codes[idx][0] == "IN", ""
     idx += 1
     expr, idx = Checker.codeMatch(
         codes=codes,
