@@ -18,8 +18,7 @@ with open("Grammer/priority.txt", "r") as file:
 
 
 def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-    if codes[idx][0] != "LSQB":
-        raise SyntaxError()
+    assert codes[idx][0] == "LSQB", ""
     idx += 1
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
@@ -55,8 +54,7 @@ def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
             count += 1
     if not count % 2:  # 마지막 객체가 생략됬다면
         tree["Elements"].append({})  # type: ignore
-    if len(tree["Elements"]) == 0 or len(tree["Elements"]) > 3:
-        raise SyntaxError()
+    assert not (len(tree["Elements"]) == 0 or len(tree["Elements"]) > 3), ""
     if len(tree["Elements"]) > 1:
         if len(tree["Elements"]) == 2:
             tree["Elements"].append({})  # type: ignore
@@ -67,8 +65,7 @@ def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
 def getMemberAccess(
     codes: list[tuple[str, str]], idx: int
 ) -> tuple[dict[str, Any], int]:
-    if codes[idx][0] != "DOT":
-        raise SyntaxError()
+    assert codes[idx][0] == "DOT", ""
     idx += 1
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
@@ -177,29 +174,46 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     syntax_stack: list[tuple[str, str]] = []
     syntax_check_stack: list[str] = []
     tree["Category"] = "Expression"
-    tree["ObjectType"] = "Expression"
+    tree["ObjectType"] = "Expr"
     tree["ExprList"] = []
     state: int = 0
 
-    def push(expr: dict[str, Any]):
+    def syntax_check(expr: dict[str, Any]) -> bool:
+        if "NextSyntax" in expr:
+            return (
+                expr["NextSyntax"]
+                == syntax_check_stack[
+                    len(syntax_check_stack) - len(expr["NextSyntax"]) :
+                ]
+            )
+        return True
+
+    def push(expr: dict[str, Any]) -> None:
         while True:
             if len(stack) == 0:  # 스택이 비었다면
                 stack.append(expr)
                 break
-            elif stack[-1]["Op"] == "LPAREN":
+            elif stack[-1]["Op"] == "LPAREN":  # 이미 들어있는 연산자가 괄호라면
                 stack.append(expr)
                 break
             elif (
                 stack[-1]["Priority"] <= expr["Priority"]
             ):  # 이미 들어있는 연산자의 우선순위가 더 높거나 같다면
-                tree["ExprList"].append(stack[-1])
+                if syntax_check(stack[-1]):
+                    tree["ExprList"].append(stack[-1])
+                else:
+                    raise SyntaxError()
                 stack.pop()
             else:  # 현재 연산자의 우선순위가 더 높다면
                 stack.append(expr)
                 break
 
     while True:
-        if state == 0:
+        if state == 0:  # 전위 단항 또는 피연산자
+            if codes[idx][0] == "LPAREN":
+                stack.append({"Op": "LPAREN"})
+                idx += 1
+                continue
             try:
                 expr, idx = getPreUnaryOp(codes=codes, idx=idx)
                 stack.append(expr)
@@ -208,26 +222,33 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
                 expr, idx = getOperand(codes=codes, idx=idx)
                 tree["ExprList"].append(expr)  # type: ignore
                 state = 1
-        elif state == 1:
+        elif state == 1:  # 후위 단항 또는 next_syntax
             if len(syntax_stack) > 0:
-                if codes[idx][0] == syntax_stack[-1][1]:
+                if codes[idx][0] == syntax_stack[-1][1]:  # 토큰이 n항 연산자의 다음 문법과 동일한 경우
                     state = 0
+                    syntax_check_stack.append(codes[idx][0])
                     idx += 1
                     while len(stack) > 0:
                         if (
                             syntax_stack[-1][0] == stack[-1]["Op"]
-                        ):  # next_syntax가 prev_syntax를 만날 때까지 나머지 연산자들을 전부 스택에 넣는다.
+                        ):  # next_syntax가 prev_syntax를 만날 때까지 스택의 연산자들을 전부 postfix 스택에 넣는다.
                             break
                         tree["ExprList"].append(stack.pop())  # type: ignore
                     syntax_stack.pop()
                     continue
+            if codes[idx][0] == "RPAREN":
+                while stack[-1]["Op"] != "LPAREN":
+                    tree["ExprList"].append(stack.pop())  # type: ignore
+                idx += 1
+                stack.pop()
+                continue
             try:
                 expr, idx = getPostUnaryOp(codes=codes, idx=idx)
                 push(expr=expr)
                 state = 1
             except:
                 state = 2
-        elif state == 2:
+        elif state == 2:  # 이항 또는 삼항 연산자
             try:
                 expr, idx = getBinaryOp(codes=codes, idx=idx)
                 push(expr=expr)
@@ -246,10 +267,10 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
                     break
             state = 0
     for op in reversed(stack):
+        assert syntax_check(op), ""
         tree["ExprList"].append(op)  # type: ignore
 
-    if len(syntax_stack) != 0:
-        raise SyntaxError()
+    assert len(syntax_stack) == 0, ""
     return (tree, idx)
 
 
