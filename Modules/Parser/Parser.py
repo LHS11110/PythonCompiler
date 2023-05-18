@@ -1,24 +1,21 @@
-from dataclasses import dataclass, field
-
-
-@dataclass
 class state:
-    VarState: bool = False
-    LoopState: bool = False
-    IfState: bool = False
-    IndentState: int = 0
-    ExprState: bool = False
-    DefState: bool = False
-    EndOfLineState: bool = False  #
+    def __init__(self) -> None:
+        self.VarState: bool = False
+        self.LoopState: bool = False
+        self.IfState: bool = False
+        self.IndentState: int = 0
+        self.ExprState: bool = False
+        self.DefState: bool = False
+        self.EndOfLineState: bool = False  #
 
-    ClassSet: set[str] = field(default_factory=set)
-    FuncSet: set[str] = field(default_factory=set)
-    VarSet: set[str] = field(default_factory=set)
-    StructSet: set[str] = field(default_factory=set)
-    StaticVarSet: set[str] = field(default_factory=set)
+        self.ClassSet: set[str] = set()
+        self.FuncSet: set[str] = set()
+        self.VarSet: set[str] = set()
+        self.StructSet: set[str] = set()
+        self.StaticVarSet: set[str] = set()
 
-    FuncStack: list[str] = field(default_factory=list)
-    BracketStack: list[str] = field(default_factory=list)  #
+        self.FuncStack: list[str] = list()
+        self.BracketStack: list[str] = list()  #
 
 
 def cleanup(codes: list[tuple[str, str]]) -> list[tuple[str, str]]:
