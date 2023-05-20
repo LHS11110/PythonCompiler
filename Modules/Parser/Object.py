@@ -99,13 +99,11 @@ def getGenerator(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any]
         codes=codes,
         idx=idx,
         match_list=[
-            getLiteral,
-            getVar,
             Container.getDict,
             Container.getList,
             Container.getSet,
             Container.getTuple,
-            Expression.getExpr,
+            Container.getEnum,
         ],
     )
     tree["Row"] = expr
