@@ -37,7 +37,7 @@ PreUnaryOperator
     MINUS               5
     PLUS                5
     NOT                 13
-    MULTIPLY            3
+    MULTIPLY            8
 
 Operand
     Object              1
