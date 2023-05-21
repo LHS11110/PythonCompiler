@@ -77,16 +77,14 @@ def code_match(
         try:
             tree, idx = object_match(codes=codes, idx=idx, obj_list=obj_list)
         except:
-            if container_list:  # container 매치 리스트가 비어있지 않다면
-                try:
-                    tree, idx = container_match(
-                        codes=codes,
-                        idx=idx,
-                        container_list=container_list,
-                        obj_list=obj_list,
-                    )
-                except:
-                    pass
+            pass
+    if container_list:  # container 매치 리스트가 비어있지 않다면
+        try:
+            tree, idx = container_match(
+                codes=codes, idx=idx, container_list=container_list, obj_list=obj_list
+            )
+        except:
+            pass
     assert tree, ""  # 매칭된 경우가 없다면 에러처리
     return (tree, idx)
 
