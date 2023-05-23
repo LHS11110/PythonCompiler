@@ -1,10 +1,12 @@
 from typing import Any, Callable
 import Modules.Parser.Checker as Checker
-import Modules.Parser.Expression as Expression
 import Modules.Parser.Object as Object
 
 
-def getTuple(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getTuple(
+    codes: list[tuple[str, str]],
+    idx: int,
+) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     if codes[idx][0] != "LPAREN":  # '(' 검사
         raise SyntaxError()
@@ -15,18 +17,11 @@ def getTuple(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], in
     count: int = 0  # 구분자와 표현식 순서를 파악하는데 사용할 변수
     while codes[idx][0] != "RPAREN":  # ')'가 온다면
         if not count % 2:  # 표현식 검사
-            element, idx = Checker.codeMatch(
+            element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                match_list=[
-                    Object.getVar,
-                    Object.getLiteral,
-                    Expression.getExpr,
-                    getTuple,  # 튜플 자료형
-                    getSet,  # 집합 자료형
-                    getList,  # 리스트 자료형
-                    getDict,  # 사전 자료형
-                ],
+                container_list=default_container,
+                obj_list=Object.default_obj,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -41,7 +36,10 @@ def getTuple(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], in
     return (tree, idx + 1)
 
 
-def getSet(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getSet(
+    codes: list[tuple[str, str]],
+    idx: int,
+) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     if codes[idx][0] != "LBRACE":
         raise SyntaxError()
@@ -52,18 +50,11 @@ def getSet(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]
     count: int = 0
     while codes[idx][0] != "RBRACE":
         if not count % 2:
-            element, idx = Checker.codeMatch(
+            element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                match_list=[
-                    Object.getVar,
-                    Object.getLiteral,
-                    Expression.getExpr,
-                    getTuple,  # 튜플 자료형
-                    getSet,  # 집합 자료형
-                    getList,  # 리스트 자료형
-                    getDict,  # 사전 자료형
-                ],
+                container_list=default_container,
+                obj_list=Object.default_obj,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -78,7 +69,10 @@ def getSet(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]
     return (tree, idx + 1)
 
 
-def getList(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getList(
+    codes: list[tuple[str, str]],
+    idx: int,
+) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     if codes[idx][0] != "LSQB":
         raise SyntaxError()
@@ -89,18 +83,11 @@ def getList(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     count: int = 0
     while codes[idx][0] != "RSQB":
         if not count % 2:
-            element, idx = Checker.codeMatch(
+            element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                match_list=[
-                    Object.getVar,
-                    Object.getLiteral,
-                    Expression.getExpr,
-                    getTuple,  # 튜플 자료형
-                    getSet,  # 집합 자료형
-                    getList,  # 리스트 자료형
-                    getDict,  # 사전 자료형
-                ],
+                container_list=default_container,
+                obj_list=Object.default_obj,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -115,7 +102,64 @@ def getList(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     return (tree, idx + 1)
 
 
-def getEnum(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getDict(
+    codes: list[tuple[str, str]],
+    idx: int,
+) -> tuple[dict[str, Any], int]:
+    tree: dict[str, Any] = {}
+    if codes[idx][0] != "LBRACE":
+        raise SyntaxError()
+    idx += 1
+    tree["Category"] = "Object"
+    tree["ObjectType"] = "Dict"
+    tree["Elements"] = []
+    count: int = 0
+
+    def getKeyAndValue(
+        codes: list[tuple[str, str]],
+        idx: int,
+    ) -> tuple[dict[str, Any], int]:
+        tree: dict[str, Any] = {}
+        tree["Category"] = "Object"
+        tree["ObjectType"] = "KeyAndValue"
+        expr, idx = Checker.code_match(
+            codes=codes,
+            idx=idx,
+            container_list=default_container,
+            obj_list=Object.default_obj,
+        )
+        tree["Key"] = expr
+        assert codes[idx][0] == "COLON", ""
+        idx += 1
+        expr, idx = Checker.code_match(
+            codes=codes,
+            idx=idx,
+            container_list=default_container,
+            obj_list=Object.default_obj,
+        )
+        tree["Value"] = expr
+        return (tree, idx)
+
+    while codes[idx][0] != "RBRACE":
+        if not count % 2:
+            element, idx = getKeyAndValue(codes=codes, idx=idx)
+            tree["Elements"].append(element)  # type: ignore
+            count += 1
+
+        elif count % 2 and codes[idx][0] != "COMMA":
+            raise SyntaxError()
+
+        else:
+            idx += 1
+            count += 1
+
+    return (tree, idx + 1)
+
+
+def getEnum(
+    codes: list[tuple[str, str]],
+    idx: int,
+) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     tree["Category"] = "Object"
     tree["ObjectType"] = "Enum"
@@ -128,18 +172,11 @@ def getEnum(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
 
         elif not count % 2:
             try:
-                element, idx = Checker.codeMatch(
+                element, idx = Checker.code_match(
                     codes=codes,
                     idx=idx,
-                    match_list=[
-                        Object.getVar,
-                        Object.getLiteral,
-                        Expression.getExpr,
-                        getTuple,  # 튜플 자료형
-                        getSet,  # 집합 자료형
-                        getList,  # 리스트 자료형
-                        getDict,  # 사전 자료형
-                    ],
+                    container_list=default_container,
+                    obj_list=Object.default_obj,
                 )
                 tree["Elements"].append(element)  # type: ignore
                 count += 1
@@ -157,38 +194,12 @@ def getEnum(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     return (tree, idx)
 
 
-def getDict(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-    tree: dict[str, Any] = {}
-    if codes[idx][0] != "LBRACE":
-        raise SyntaxError()
-    idx += 1
-    tree["Category"] = "Object"
-    tree["ObjectType"] = "Dict"
-    tree["Elements"] = []
-    count: int = 0
-    while codes[idx][0] != "RBRACE":
-        if not count % 2:
-            element, idx = Checker.codeMatch(
-                codes=codes,
-                idx=idx,
-                match_list=[Object.getKeyAndValue],
-            )
-            tree["Elements"].append(element)  # type: ignore
-            count += 1
-
-        elif count % 2 and codes[idx][0] != "COMMA":
-            raise SyntaxError()
-
-        else:
-            idx += 1
-            count += 1
-
-    return (tree, idx + 1)
-
-
-obj_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]] = [
-    getDict,
-    getList,
-    getSet,
-    getTuple,
-]
+default_container: list[
+    Callable[
+        [
+            list[tuple[str, str]],
+            int,
+        ],
+        tuple[dict[str, Any], int],
+    ]
+] = [getTuple, getDict, getList, getSet]
