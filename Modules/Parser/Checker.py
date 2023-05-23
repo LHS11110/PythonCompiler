@@ -29,20 +29,15 @@ def container_match(
             [
                 list[tuple[str, str]],
                 int,
-                list[Any],
-                list[
-                    Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
-                ],
             ],
             tuple[dict[str, Any], int],
         ]
     ],
-    obj_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]],
 ) -> tuple[dict[str, Any], int]:
     expr_tuple: tuple[dict[str, Any], int] = (dict(), -1)  # 표현식과 인덱스를 담을 튜플
     for container in container_list:
         try:
-            expr, _idx = container(codes, idx, container_list, obj_list)
+            expr, _idx = container(codes, idx)
             if _idx > expr_tuple[1]:  # 표현식이 더 많이 매칭된 경우
                 expr_tuple = (expr, _idx)
         except:  # 매칭될 수 없는 경우
@@ -61,10 +56,6 @@ def code_match(
             [
                 list[tuple[str, str]],
                 int,
-                list[Any],
-                list[
-                    Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
-                ],
             ],
             tuple[dict[str, Any], int],
         ]
@@ -81,7 +72,9 @@ def code_match(
     if container_list:  # container 매치 리스트가 비어있지 않다면
         try:
             tree, idx = container_match(
-                codes=codes, idx=idx, container_list=container_list, obj_list=obj_list
+                codes=codes,
+                idx=idx,
+                container_list=container_list,
             )
         except:
             pass
