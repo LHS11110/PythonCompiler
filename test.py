@@ -1,13 +1,13 @@
 from Modules.Parser import Parser
 from Modules.Lexer import Lexer
-from Modules.Parser import Parser
 from Modules.Parser import Container
 from Modules.Parser import Object
 from Modules.Parser import Expression
 from Modules.Parser import Checker
 from Modules.Parser.Expression import priority
+import time
 
-input_txt: str = '{1: 2, "123": 123, {123}: [123]}\n'
+input_txt: str = "a.a[1]()\n"
 
 print(input_txt)
 print(
@@ -16,23 +16,18 @@ print(
 )
 
 print(
-    Container.getDict(
-        Parser.cleanup(Lexer.tokenize(input_text=input_txt)),
-        0,
-        container_list=[Container.getList, Container.getSet],
-        obj_list=[Object.getLiteral, Object.getVar],
-    ),
+    Expression.getExpr(Parser.cleanup(Lexer.tokenize(input_text=input_txt)), 0),
     end="\n\n",
 )
 
 print(
     Parser.cleanup(Lexer.tokenize(input_text=input_txt))[
-        Container.getDict(
+        Expression.getExpr(
             Parser.cleanup(Lexer.tokenize(input_text=input_txt)),
             0,
-            container_list=[Container.getList, Container.getSet],
-            obj_list=[Object.getLiteral, Object.getVar],
         )[1] :
     ],
     end="\n\n",
 )
+
+print((123).__radd__("123"))
