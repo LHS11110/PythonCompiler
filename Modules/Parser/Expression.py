@@ -151,7 +151,10 @@ def getOperand(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], 
     return (tree, idx)
 
 
-def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getExpr(
+    codes: list[tuple[str, str]],
+    idx: int,
+) -> tuple[dict[str, Any], int]:
     stack: list[dict[str, Any]] = []
     tree: dict[str, Any] = {}
     syntax_stack: list[tuple[str, str]] = []
@@ -252,6 +255,10 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     return (tree, idx)
 
 
-obj_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]] = [
-    getExpr
+op_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]] = [
+    getBinaryOp,
+    getOperand,
+    getPostUnaryOp,
+    getPreUnaryOp,
+    getTernaryOp,
 ]
