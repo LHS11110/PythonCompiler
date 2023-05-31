@@ -20,8 +20,7 @@ def getTuple(
             element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                container_list=default_container,
-                obj_list=Object.default_obj,
+                obj_list=Object.default_obj + default_container,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -53,8 +52,7 @@ def getSet(
             element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                container_list=default_container,
-                obj_list=Object.default_obj,
+                obj_list=Object.default_obj + default_container,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -86,8 +84,7 @@ def getList(
             element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                container_list=default_container,
-                obj_list=Object.default_obj,
+                obj_list=Object.default_obj + default_container,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -125,8 +122,7 @@ def getDict(
         expr, idx = Checker.code_match(
             codes=codes,
             idx=idx,
-            container_list=default_container,
-            obj_list=Object.default_obj,
+            obj_list=Object.default_obj + default_container,
         )
         tree["Key"] = expr
         assert codes[idx][0] == "COLON", ""
@@ -134,8 +130,7 @@ def getDict(
         expr, idx = Checker.code_match(
             codes=codes,
             idx=idx,
-            container_list=default_container,
-            obj_list=Object.default_obj,
+            obj_list=Object.default_obj + default_container,
         )
         tree["Value"] = expr
         return (tree, idx)
@@ -175,8 +170,7 @@ def getEnum(
                 element, idx = Checker.code_match(
                     codes=codes,
                     idx=idx,
-                    container_list=default_container,
-                    obj_list=Object.default_obj,
+                    obj_list=Object.default_obj + default_container,
                 )
                 tree["Elements"].append(element)  # type: ignore
                 count += 1
