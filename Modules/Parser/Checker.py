@@ -1,10 +1,12 @@
 from typing import Callable, Any
 
 
-def object_match(
+def code_match(
     codes: list[tuple[str, str]],
     idx: int,
-    obj_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]],
+    obj_list: list[
+        Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
+    ] = [],
 ) -> tuple[dict[str, Any], int]:
     expr_tuple: tuple[dict[str, Any], int] = (dict(), -1)  # 표현식과 인덱스를 담을 튜플
 
@@ -19,24 +21,6 @@ def object_match(
         raise SyntaxError()
 
     return expr_tuple
-
-
-def code_match(
-    codes: list[tuple[str, str]],
-    idx: int,
-    obj_list: list[
-        Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
-    ] = [],
-) -> tuple[dict[str, Any], int]:
-    assert obj_list, ""  #  컨테이너가 모두 비어있다면 에러처리
-    tree: dict[str, Any] = {}
-    if obj_list:  # obj 매치 리스트가 비어있지 않다면
-        try:
-            tree, idx = object_match(codes=codes, idx=idx, obj_list=obj_list)
-        except:
-            pass
-    assert tree, ""  # 매칭된 경우가 없다면 에러처리
-    return (tree, idx)
 
 
 def typeCheck(obj_types: list[str], type_list: list[str]) -> bool:
