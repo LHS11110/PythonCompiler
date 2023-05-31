@@ -3,18 +3,17 @@ import Modules.Parser.Checker as Checker
 import Modules.Parser.Container as Container
 import Modules.Parser.Object as Object
 
-
 # 연산자 우선순위
 priority: dict[str, list[list[str]]] = {}
 with open("Grammer/priority.txt", "r") as file:
     category: str = ""
     for line in file.read().split("\n"):
-        line_list: list[str] = line.split()
-        if len(line_list) == 1:
-            category = line_list[0]
+        word_list: list[str] = line.split()
+        if len(word_list) == 1:
+            category = word_list[0]
             priority[category] = []
-        elif len(line_list) > 0:
-            priority[category].append(list(value for value in line_list))
+        elif len(word_list) > 1:
+            priority[category].append(list(value for value in word_list))
 
 
 def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
@@ -30,18 +29,10 @@ def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
             if codes[idx][0] == "COLON":  # 슬라이싱에서 객체가 생략됬다면
                 tree["Elements"].append({})  # type: ignore
             else:
-                element, idx = Checker.codeMatch(
+                element, idx = Checker.code_match(
                     codes=codes,
                     idx=idx,
-                    match_list=[
-                        Object.getVar,
-                        Object.getLiteral,
-                        getExpr,
-                        Container.getTuple,
-                        Container.getSet,
-                        Container.getList,
-                        Container.getDict,
-                    ],
+                    obj_list=Object.default_obj + Container.default_container,
                 )
                 tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -62,22 +53,15 @@ def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
     return (tree, idx + 1)
 
 
-def getMemberAccess(
-    codes: list[tuple[str, str]], idx: int
-) -> tuple[dict[str, Any], int]:
-    assert codes[idx][0] == "DOT", ""
-    idx += 1
-    tree: dict[str, Any] = {}
-    tree["Category"] = "Expression"
-    tree["ObjectType"] = "MemberAccess"
-    expr, idx = Checker.codeMatch(codes=codes, idx=idx, match_list=[Object.getVar])
-    tree["Elements"] = [expr["Name"]]
-    return (tree, idx)
-
-
 def getCall(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
-    expr, idx = Checker.codeMatch(codes=codes, idx=idx, match_list=[Container.getTuple])
+    expr, idx = Checker.code_match(
+        codes=codes,
+        idx=idx,
+        obj_list=[
+            Container.getTuple,
+        ],
+    )
     tree["Category"] = "Expression"
     tree["ObjectType"] = "Call"
     tree["Elements"] = expr["Elements"]
@@ -121,13 +105,12 @@ def getPostUnaryOp(
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "PostUnaryOp"
-    expr, idx = Checker.codeMatch(
+    expr, idx = Checker.code_match(
         codes=codes,
         idx=idx,
-        match_list=[
+        obj_list=[
             getCall,
             getIndexing,
-            getMemberAccess,
         ],
     )
 
@@ -159,10 +142,17 @@ def getPreUnaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any
 
 
 def getOperand(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-    tree, idx = Checker.codeMatch(
+    tree, idx = Checker.code_match(
         codes=codes,
         idx=idx,
-        match_list=[*Container.obj_list, Object.getLiteral, Object.getVar],
+        obj_list=[
+            Object.getVar,
+            Object.getLiteral,
+            Container.getDict,
+            Container.getList,
+            Container.getTuple,
+            Container.getSet,
+        ],
     )
 
     return (tree, idx)
@@ -180,12 +170,7 @@ def getExpr(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
 
     def syntax_check(expr: dict[str, Any]) -> bool:
         if "NextSyntax" in expr:
-            return (
-                expr["NextSyntax"]
-                == syntax_check_stack[
-                    len(syntax_check_stack) - len(expr["NextSyntax"]) :
-                ]
-            )
+            return expr["NextSyntax"] == syntax_check_stack[-len(expr["NextSyntax"]) :]
         return True
 
     def push(expr: dict[str, Any]) -> None:
