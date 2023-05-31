@@ -145,14 +145,7 @@ def getOperand(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], 
     tree, idx = Checker.code_match(
         codes=codes,
         idx=idx,
-        obj_list=[
-            Object.getVar,
-            Object.getLiteral,
-            Container.getDict,
-            Container.getList,
-            Container.getTuple,
-            Container.getSet,
-        ],
+        obj_list=Object.default_obj + Container.default_container,
     )
 
     return (tree, idx)
