@@ -2,6 +2,7 @@ TernaryOperator
     IF      ELSE        16
 
 BinaryOperator
+    DOT        2
     DMULTIPLY           4
     MULTIPLY            6
     DIVIDE              6
@@ -31,7 +32,6 @@ PostUnaryOperator
     Indexing            2
     Slicing             2
     Call                2
-    MemberAccess        2
 
 PreUnaryOperator
     MINUS               5
