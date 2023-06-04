@@ -1,6 +1,7 @@
 from typing import Any, Callable
 import Modules.Parser.Checker as Checker
 import Modules.Parser.Object as Object
+import Modules.Parser.Expression as Expression
 
 
 def getTuple(
@@ -20,7 +21,9 @@ def getTuple(
             element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                obj_list=Object.default_obj + default_container,
+                obj_list=Object.default_obj
+                + default_container
+                + Expression.default_expression,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -52,7 +55,9 @@ def getSet(
             element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                obj_list=Object.default_obj + default_container,
+                obj_list=Object.default_obj
+                + default_container
+                + Expression.default_expression,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -84,7 +89,9 @@ def getList(
             element, idx = Checker.code_match(
                 codes=codes,
                 idx=idx,
-                obj_list=Object.default_obj + default_container,
+                obj_list=Object.default_obj
+                + default_container
+                + Expression.default_expression,
             )
             tree["Elements"].append(element)  # type: ignore
             count += 1
@@ -122,7 +129,9 @@ def getDict(
         expr, idx = Checker.code_match(
             codes=codes,
             idx=idx,
-            obj_list=Object.default_obj + default_container,
+            obj_list=Object.default_obj
+            + default_container
+            + Expression.default_expression,
         )
         tree["Key"] = expr
         assert codes[idx][0] == "COLON", ""
@@ -130,7 +139,9 @@ def getDict(
         expr, idx = Checker.code_match(
             codes=codes,
             idx=idx,
-            obj_list=Object.default_obj + default_container,
+            obj_list=Object.default_obj
+            + default_container
+            + Expression.default_expression,
         )
         tree["Value"] = expr
         return (tree, idx)
@@ -154,6 +165,15 @@ def getDict(
 def getEnum(
     codes: list[tuple[str, str]],
     idx: int,
+    obj_list: list[
+        Callable[
+            [
+                list[tuple[str, str]],
+                int,
+            ],
+            tuple[dict[str, Any], int],
+        ]
+    ],
 ) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     tree["Category"] = "Object"
@@ -168,9 +188,7 @@ def getEnum(
         elif not count % 2:
             try:
                 element, idx = Checker.code_match(
-                    codes=codes,
-                    idx=idx,
-                    obj_list=Object.default_obj + default_container,
+                    codes=codes, idx=idx, obj_list=obj_list
                 )
                 tree["Elements"].append(element)  # type: ignore
                 count += 1
