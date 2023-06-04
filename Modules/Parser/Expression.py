@@ -255,10 +255,6 @@ def getExpr(
     return (tree, idx)
 
 
-op_list: list[Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]] = [
-    getBinaryOp,
-    getOperand,
-    getPostUnaryOp,
-    getPreUnaryOp,
-    getTernaryOp,
-]
+default_expression: list[
+    Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
+] = [getExpr]
