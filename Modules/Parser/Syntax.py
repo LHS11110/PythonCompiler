@@ -2,6 +2,7 @@ from typing import Any
 import Modules.Parser.Checker as Checker
 import Modules.Parser.Container as Container
 import Modules.Parser.Object as Object
+import Modules.Parser.Expression as Expression
 
 
 def getGenerator(
@@ -11,44 +12,36 @@ def getGenerator(
     expr, idx = Checker.code_match(
         codes=codes,
         idx=idx,
-        obj_list=[
-            Object.getLiteral,
-            Object.getVar,
-            Container.getDict,
-            Container.getList,
-            Container.getSet,
-            Container.getTuple,
-        ],
+        obj_list=Object.default_obj
+        + Container.default_container
+        + Expression.default_expression,
     )
 
     tree: dict[str, Any] = {}
     tree["Output"] = expr
     assert codes[idx][0] == "FOR", ""
     idx += 1
-    tree["Variables"], idx = Checker.code_match(
-        codes=codes,
-        idx=idx,
-        obj_list=[
-            Object.getLiteral,
-            Object.getVar,
-            Container.getList,
-            Container.getTuple,
-        ],
-    )
-    if tree["Variables"]["ObjectType"] != "Var":
+    try:
+        tree["Variables"], idx = Checker.code_match(
+            codes=codes, idx=idx, obj_list=[Container.getList, Container.getTuple]
+        )
+    except:
+        tree["Variables"], idx = Container.getEnum(
+            codes=codes, idx=idx, obj_list=[Object.getVar]
+        )
+    if tree["Variables"]["ObjectType"] != "Enum":
+        print(tree["Variables"])
         assert Checker.typeCheck(
-            obj_types=[obj["ObjectType"] for obj in tree["Variables"]["Elements"]],
-            type_list=["Var"],
+            obj_types=[v["ObjectType"] for v in tree["Variables"]["Elements"]], type_list=["Var"]  # type: ignore
         ), ""
-        tree["Variables"] = tree["Variables"]["Elements"]
-    else:
-        tree["Variables"] = [tree["Variables"]]
     assert codes[idx][0] == "IN", ""
     idx += 1
     expr, idx = Checker.code_match(
         codes=codes,
         idx=idx,
-        obj_list=Object.default_obj + Container.default_container,
+        obj_list=Object.default_obj
+        + Container.default_container
+        + Expression.default_expression,
     )
     tree["Row"] = expr
     if codes[idx][0] != "IF":
@@ -57,14 +50,9 @@ def getGenerator(
     expr, idx = Checker.code_match(
         codes=codes,
         idx=idx,
-        obj_list=Object.default_obj + Container.default_container,
+        obj_list=Object.default_obj
+        + Container.default_container
+        + Expression.default_expression,
     )
     tree["Condition"] = expr
-    return (tree, idx)
-
-
-def initialization(
-    codes: list[tuple[str, str]], idx: int
-) -> tuple[dict[str, Any], int]:
-    tree: dict[str, Any] = {}
     return (tree, idx)
