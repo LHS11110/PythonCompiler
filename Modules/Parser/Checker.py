@@ -24,4 +24,4 @@ def code_match(
 
 
 def typeCheck(obj_types: list[str], type_list: list[str]) -> bool:
-    return False in [obj_type in type_list for obj_type in obj_types]
+    return not (False in [obj_type in type_list for obj_type in obj_types])
