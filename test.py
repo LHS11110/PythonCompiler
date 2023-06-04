@@ -4,10 +4,11 @@ from Modules.Parser import Container
 from Modules.Parser import Object
 from Modules.Parser import Expression
 from Modules.Parser import Checker
+from Modules.Parser import Syntax
 from Modules.Parser.Expression import priority
 import time
 
-input_txt: str = "a.a[1]()\n"
+input_txt: str = "a.a[1]() for i, j, asd123 in range(10)\n"
 
 print(input_txt)
 print(
@@ -16,13 +17,13 @@ print(
 )
 
 print(
-    Expression.getExpr(Parser.cleanup(Lexer.tokenize(input_text=input_txt)), 0),
+    Syntax.getGenerator(Parser.cleanup(Lexer.tokenize(input_text=input_txt)), 0),
     end="\n\n",
 )
 
 print(
     Parser.cleanup(Lexer.tokenize(input_text=input_txt))[
-        Expression.getExpr(
+        Syntax.getGenerator(
             Parser.cleanup(Lexer.tokenize(input_text=input_txt)),
             0,
         )[1] :
