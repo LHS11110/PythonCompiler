@@ -11,7 +11,7 @@ namespace pyc
     class Namespace
     {
     private:
-        auto hash(const char *) -> int;
+        auto hash(const char *) -> unsigned int;
 
     public:
         Namespace();
