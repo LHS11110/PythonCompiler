@@ -1,10 +1,12 @@
 CXX=g++
-CFLAGS=-g -Wall -Wextra -pedantic -Werror -target x86_64-apple-darwin20.3.0
+CFLAGS=-std=c++20 -I ./Library
+OBJS=namespace.o
 
-all:
-	nasm -f macho64 -o $(source).o $(source).asm
-	$(CXX) $(source).o -o $(source).out $(CFLAGS)
-	rm $(source).o
+main.out: $(OBJS) $(source)
+	$(CXX) $(CFLAGS) -o main.out $(OBJS) $(source)
+
+namespace.o: Library/Namespace.hpp Library/Namespace.cpp
+	$(CXX) $(CFLAGS) -c -o namespace.o Library/Namespace.cpp
 
 clean:
-	rm -f *.out *.o
+	rm -f *.o *.out
