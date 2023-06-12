@@ -17,6 +17,7 @@
         "string": "cpp",
         "string_view": "cpp",
         "unordered_map": "cpp",
-        "__string": "cpp"
+        "__string": "cpp",
+        "map": "cpp"
     }
 }
