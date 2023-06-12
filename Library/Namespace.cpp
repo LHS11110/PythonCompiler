@@ -2,16 +2,16 @@
 
 template <typename Type>
 pyc::Namespace<Type>::Namespace()
-    :
+    : table(nullptr), table_size(0)
 {
 }
 
 template <typename Type>
-auto pyc::Namespace<Type>::hash(const char *key) -> unsigned int
+auto pyc::Namespace<Type>::hash(const unsigned char *key) -> unsigned int
 {
     int c = 0;
     unsigned int hash = 0;
-    while (c = *key++)
+    while ((c = *key++))
     {
         hash += c;
         hash += hash << 10;
@@ -21,4 +21,9 @@ auto pyc::Namespace<Type>::hash(const char *key) -> unsigned int
     hash ^= hash >> 11;
     hash += hash << 15;
     return hash;
+}
+
+template <typename Type>
+inline auto pyc::Namespace<Type>::resize(void) -> void
+{
 }
