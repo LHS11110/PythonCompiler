@@ -18,6 +18,10 @@
         "string_view": "cpp",
         "unordered_map": "cpp",
         "__string": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "__config": "cpp",
+        "istream": "cpp",
+        "locale": "cpp",
+        "__tree": "cpp"
     }
 }
