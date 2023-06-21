@@ -30,10 +30,7 @@ namespace pyc
         ui64 table_size;
 
     public:
-        // Jenkins hash function
-        inline auto hash(_str) -> ui32;
-        inline auto hash(ui32) -> ui32;
-        inline auto hash(const string &) -> ui32;
+        inline auto hash(const Key &) -> ui32;
         inline auto resize(void) -> void;
 
     public:
@@ -58,32 +55,9 @@ pyc::Namespace<Key, Value>::~Namespace()
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::hash(_str key) -> ui32
+inline auto pyc::Namespace<Key, Value>::hash(const Key &key) -> ui32
 {
-    int c = 0;
-    ui32 hash = 0;
-    while ((c = *(const unsigned char *)key++))
-    {
-        hash += c;
-        hash += hash << 10;
-        hash ^= hash >> 6;
-    }
-    hash += hash << 3;
-    hash ^= hash >> 11;
-    hash += hash << 15;
-    return hash;
-}
-
-template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::hash(ui32 key) -> ui32
-{
-    return key;
-}
-
-template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::hash(const string &key) -> ui32
-{
-    return hash(&key[0]);
+    return key.hash();
 }
 
 template <typename Key, typename Value>
