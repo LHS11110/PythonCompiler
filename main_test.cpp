@@ -7,17 +7,14 @@ using namespace std;
 
 auto main(void) -> int
 {
-    unordered_map<int, int> m;
+    pyc::Namespace<identifier, int> m;
 
     clock_t s = clock();
     string str;
-    for (int i = 0; i < 100000; i++)
-    {
-        str += 'a';
-        identifier ident(&str[0]);
-        ident.hash();
-    }
+    for (int i = 0; i < 10000000; i++)
+        m["asd"] = i;
     cout << float(clock() - s) / CLOCKS_PER_SEC << '\n';
+    cout << *m.find("asd") << '\n';
 
     return 0;
 }
