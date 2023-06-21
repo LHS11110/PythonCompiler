@@ -15,7 +15,7 @@ namespace pyc
     template <typename Key, typename Value>
     class Namespace
     {
-    public:
+    private:
         struct keyAndValue
         {
             Key key;
@@ -30,14 +30,15 @@ namespace pyc
         ui64 table_size;
 
     public:
-        inline auto hash(const Key &) -> ui32;
         inline auto resize(void) -> void;
+        auto find(const Key &) -> Value *;
+        auto insert(const Key &, const Value &) -> Value &;
+        auto add(const Key &) -> Value &;
 
     public:
         Namespace(void);
         ~Namespace(void);
-        auto find(Key) -> Value *;
-        auto insert(Key, Value) -> Value &;
+        auto operator[](const Key &) -> Value &;
     };
 }
 
@@ -52,12 +53,6 @@ pyc::Namespace<Key, Value>::~Namespace()
 {
     if (table)
         free(table);
-}
-
-template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::hash(const Key &key) -> ui32
-{
-    return key.hash();
 }
 
 template <typename Key, typename Value>
@@ -79,12 +74,12 @@ inline auto pyc::Namespace<Key, Value>::resize(void) -> void
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::find(Key key) -> Value *
+auto pyc::Namespace<Key, Value>::find(const Key &key) -> Value *
 {
     if (!this->table_size)
         return nullptr;
     ui32 bit_idx = 1, idx = 0;
-    bucket &b = table[Modulo(hash(key), table_size)];
+    bucket &b = table[Modulo(key.hash(), table_size)];
     if (!b.infobyte)
         return nullptr;
     while (bit_idx)
@@ -97,13 +92,13 @@ auto pyc::Namespace<Key, Value>::find(Key key) -> Value *
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::insert(Key key, Value value) -> Value &
+auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &value) -> Value &
 {
 INSERT_BEGIN:
     if (!table_size)
         resize();
     ui32 bit_idx = 1, idx = 0;
-    bucket &b = table[Modulo(hash(key), table_size)];
+    bucket &b = table[Modulo(key.hash(), table_size)];
     while (bit_idx & b.infobyte)
         bit_idx <<= 1, idx++;
     if (!bit_idx)
@@ -119,6 +114,21 @@ INSERT_BEGIN:
     }
     b.infobyte |= bit_idx;
     return (b.space[idx] = {key, value}).value;
+}
+
+template <typename Key, typename Value>
+auto pyc::Namespace<Key, Value>::add(const Key &key) -> Value &
+{
+    return insert(key, Value());
+}
+
+template <typename Key, typename Value>
+auto pyc::Namespace<Key, Value>::operator[](const Key &key) -> Value &
+{
+    Value *ptr;
+    if ((ptr = find(key)))
+        return *ptr;
+    return add(key);
 }
 
 #endif
