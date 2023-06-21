@@ -11,6 +11,8 @@ private:
 public:
     identifier();
     identifier(const char *_str);
+
+    auto hash() -> unsigned int;
 };
 
 #endif
