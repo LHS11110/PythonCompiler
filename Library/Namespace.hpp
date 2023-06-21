@@ -2,7 +2,7 @@
 #define _NAMESPACE_HPP
 #define Modulo(X, Y) ((unsigned long long)X & ((unsigned long long)Y - 1)) // X % Y, (Y == 2^n)
 #include <cstdlib>
-#include <cstring>
+#include <string>
 #include <memory.h>
 using namespace std;
 typedef unsigned char ui8;
