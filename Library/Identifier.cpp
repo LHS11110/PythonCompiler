@@ -10,7 +10,7 @@ identifier::identifier(const char *_str)
 {
 }
 
-auto identifier::hash() -> unsigned int
+auto identifier::hash() const -> unsigned int
 {
     unsigned int hash_value = 0;
     unsigned long long end = len;
@@ -46,4 +46,9 @@ auto identifier::hash() -> unsigned int
     hash_value += hash_value << 15;
 
     return hash_value;
+}
+
+auto identifier::operator==(const identifier &ident) const -> bool
+{
+    return !strcmp(str, ident.str);
 }
