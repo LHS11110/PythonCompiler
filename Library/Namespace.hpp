@@ -2,12 +2,13 @@
 #define _NAMESPACE_HPP
 #define Modulo(X, Y) ((unsigned long long)X & ((unsigned long long)Y - 1)) // X % Y, (Y == 2^n)
 #include <cstdlib>
+#include <cstring>
 #include <memory.h>
 using namespace std;
 typedef unsigned char ui8;
 typedef unsigned int ui32;
 typedef unsigned long long ui64;
-typedef const char* _str;
+typedef const char *_str;
 
 namespace pyc
 {
@@ -25,21 +26,21 @@ namespace pyc
             unsigned int infobyte;
             keyAndValue space[32];
         };
-        bucket* table;
+        bucket *table;
         ui64 table_size;
 
     public:
         // Jenkins hash function
-        inline auto hash(_str)->ui32;
-        inline auto hash(ui32)->ui32;
-        inline auto hash(const string&)->ui32;
+        inline auto hash(_str) -> ui32;
+        inline auto hash(ui32) -> ui32;
+        inline auto hash(const string &) -> ui32;
         inline auto resize(void) -> void;
 
     public:
         Namespace(void);
         ~Namespace(void);
-        auto find(Key)->Value*;
-        auto insert(Key, Value)->Value&;
+        auto find(Key) -> Value *;
+        auto insert(Key, Value) -> Value &;
     };
 }
 
@@ -61,7 +62,7 @@ inline auto pyc::Namespace<Key, Value>::hash(_str key) -> ui32
 {
     int c = 0;
     ui32 hash = 0;
-    while ((c = *(const unsigned char*)key++))
+    while ((c = *(const unsigned char *)key++))
     {
         hash += c;
         hash += hash << 10;
@@ -80,7 +81,7 @@ inline auto pyc::Namespace<Key, Value>::hash(ui32 key) -> ui32
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::hash(const string& key) -> ui32
+inline auto pyc::Namespace<Key, Value>::hash(const string &key) -> ui32
 {
     return hash(&key[0]);
 }
@@ -90,12 +91,12 @@ inline auto pyc::Namespace<Key, Value>::resize(void) -> void
 {
     if (table_size == 0)
     {
-        table_size = 1, table = (bucket*)memset(malloc(sizeof(bucket)), 0, sizeof(bucket));
+        table_size = 1, table = (bucket *)memset(malloc(sizeof(bucket)), 0, sizeof(bucket));
         return;
     }
-    bucket* ptr = table;
+    bucket *ptr = table;
     ui64 _size = sizeof(bucket) * (this->table_size <<= 4);
-    table = (bucket*)memset(malloc(_size), 0, _size);
+    table = (bucket *)memset(malloc(_size), 0, _size);
     for (ui64 i = 0; i < table_size >> 4; i++)
         for (ui32 j = 1, k = 0; j; j <<= 1, k++)
             if (ptr[i].infobyte & j)
@@ -104,12 +105,12 @@ inline auto pyc::Namespace<Key, Value>::resize(void) -> void
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::find(Key key) -> Value*
+auto pyc::Namespace<Key, Value>::find(Key key) -> Value *
 {
     if (!this->table_size)
         return nullptr;
     ui32 bit_idx = 1, idx = 0;
-    bucket& b = table[Modulo(hash(key), table_size)];
+    bucket &b = table[Modulo(hash(key), table_size)];
     if (!b.infobyte)
         return nullptr;
     while (bit_idx)
@@ -122,13 +123,13 @@ auto pyc::Namespace<Key, Value>::find(Key key) -> Value*
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::insert(Key key, Value value)->Value&
+auto pyc::Namespace<Key, Value>::insert(Key key, Value value) -> Value &
 {
 INSERT_BEGIN:
     if (!table_size)
         resize();
     ui32 bit_idx = 1, idx = 0;
-    bucket& b = table[Modulo(hash(key), table_size)];
+    bucket &b = table[Modulo(hash(key), table_size)];
     while (bit_idx & b.infobyte)
         bit_idx <<= 1, idx++;
     if (!bit_idx)
@@ -143,7 +144,7 @@ INSERT_BEGIN:
         */
     }
     b.infobyte |= bit_idx;
-    return (b.space[idx] = { key, value }).value;
+    return (b.space[idx] = {key, value}).value;
 }
 
 #endif
