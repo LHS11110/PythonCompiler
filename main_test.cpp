@@ -9,7 +9,7 @@ auto main(void) -> int
     unordered_map<int, int> m;
 
     clock_t s = clock();
-    for (long long i = 0; i < 500000000; i++)
+    for (long long i = 0; i < 10000000; i++)
     {
     }
     cout << float(clock() - s) / CLOCKS_PER_SEC << '\n';
