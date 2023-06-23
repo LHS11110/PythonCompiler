@@ -2,9 +2,7 @@
 #define _NAMESPACE_HPP
 #define Modulo(X, Y) ((unsigned long long)X & ((unsigned long long)Y - 1)) // X % Y, (Y == 2^n)
 #include <cstdlib>
-#include <string>
 #include <memory.h>
-using namespace std;
 typedef unsigned char ui8;
 typedef unsigned int ui32;
 typedef unsigned long long ui64;
@@ -94,9 +92,9 @@ auto pyc::Namespace<Key, Value>::find(const Key &key) -> Value *
 template <typename Key, typename Value>
 auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &value) -> Value &
 {
-INSERT_BEGIN:
     if (!table_size)
         resize();
+INSERT_BEGIN:
     ui32 bit_idx = 1, idx = 0;
     bucket &b = table[Modulo(key.hash(), table_size)];
     while (bit_idx & b.infobyte)
@@ -108,12 +106,12 @@ INSERT_BEGIN:
         goto INSERT_BEGIN;
 
         /* code.2
-        insert(key, value);
-        return;
+        return insert(key, value);
         */
     }
     b.infobyte |= bit_idx;
-    return (b.space[idx] = {key, value}).value;
+    b.space[idx].key = key;
+    return (b.space[idx].value = value);
 }
 
 template <typename Key, typename Value>
