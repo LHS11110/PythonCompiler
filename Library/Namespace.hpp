@@ -3,6 +3,7 @@
 #define Modulo(X, Y) ((unsigned long long)X & ((unsigned long long)Y - 1)) // X % Y, (Y == 2^n)
 #include <cstdlib>
 #include <memory.h>
+#include <cstdio>
 typedef unsigned char ui8;
 typedef unsigned int ui32;
 typedef unsigned long long ui64;
@@ -13,7 +14,7 @@ namespace pyc
     template <typename Key, typename Value>
     class Namespace
     {
-    private:
+    public:
         struct keyAndValue
         {
             Key key;
@@ -31,7 +32,6 @@ namespace pyc
         inline auto resize(void) -> void;
         auto find(const Key &) -> Value *;
         auto insert(const Key &, const Value &) -> Value &;
-        auto add(const Key &) -> Value &;
 
     public:
         Namespace(void);
@@ -50,7 +50,13 @@ template <typename Key, typename Value>
 pyc::Namespace<Key, Value>::~Namespace()
 {
     if (table)
+    {
+        for (ui64 i = 0; i < table_size; i++)
+            for (ui32 j = 1, k = 0; j; j <<= 1, k++)
+                if (table[i].infobyte & j)
+                    table[i].space[k].key.~Key(), table[i].space[k].value.~Value();
         free(table);
+    }
 }
 
 template <typename Key, typename Value>
@@ -115,18 +121,12 @@ INSERT_BEGIN:
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::add(const Key &key) -> Value &
-{
-    return insert(key, Value());
-}
-
-template <typename Key, typename Value>
 auto pyc::Namespace<Key, Value>::operator[](const Key &key) -> Value &
 {
     Value *ptr;
     if ((ptr = find(key)))
         return *ptr;
-    return add(key);
+    return insert(key, Value());
 }
 
 #endif
