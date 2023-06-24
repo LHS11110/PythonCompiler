@@ -8,25 +8,8 @@ from Modules.Parser import Syntax
 from Modules.Parser.Expression import priority
 import time
 
-input_txt: str = "a.a[1]() for i, j, asd123 in range(10)\n"
-
-print(input_txt)
-print(
-    Parser.cleanup(Lexer.tokenize(input_text=input_txt)),
-    end="\n\n",
-)
-
-print(
-    Syntax.getGenerator(Parser.cleanup(Lexer.tokenize(input_text=input_txt)), 0),
-    end="\n\n",
-)
-
-print(
-    Parser.cleanup(Lexer.tokenize(input_text=input_txt))[
-        Syntax.getGenerator(
-            Parser.cleanup(Lexer.tokenize(input_text=input_txt)),
-            0,
-        )[1] :
-    ],
-    end="\n\n",
-)
+d: dict[int, int] = {}
+s: float = time.time()
+for i in range(10000000):
+    d[i] = i
+print(time.time() - s)
