@@ -22,6 +22,7 @@
         "__config": "cpp",
         "istream": "cpp",
         "locale": "cpp",
-        "__tree": "cpp"
+        "__tree": "cpp",
+        "iostream": "cpp"
     }
 }
