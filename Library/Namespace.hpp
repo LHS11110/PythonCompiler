@@ -6,7 +6,9 @@
 typedef unsigned char ui8;
 typedef unsigned int ui32;
 typedef unsigned long long ui64;
-typedef const char *_str;
+typedef const char* _str;
+
+int i = 0;
 
 namespace pyc
 {
@@ -24,18 +26,18 @@ namespace pyc
             unsigned int infobyte;
             keyAndValue space[32];
         };
-        bucket *table;
+        bucket* table;
         ui64 table_size;
 
     public:
         inline auto resize(void) -> void;
-        inline auto find(const Key &) const -> Value *;
-        inline auto insert(const Key &, const Value &) -> Value &;
+        inline auto find(const Key&) const->Value*;
+        inline auto insert(const Key&, const Value&)->Value&;
 
     public:
         Namespace(void);
         ~Namespace(void);
-        auto operator[](const Key &) -> Value &;
+        auto operator[](const Key&)->Value&;
     };
 }
 
@@ -63,26 +65,26 @@ inline auto pyc::Namespace<Key, Value>::resize(void) -> void
 {
     if (table_size == 0)
     {
-        table_size = 1, table = (bucket *)memset(malloc(sizeof(bucket)), 0, sizeof(bucket));
+        table_size = 1, table = (bucket*)memset(malloc(sizeof(bucket)), 0, sizeof(bucket));
         return;
     }
-    bucket *ptr = table;
+    bucket* ptr = table;
     ui64 _size = sizeof(bucket) * (table_size <<= 4);
-    table = (bucket *)memset(malloc(_size), 0, _size);
+    table = (bucket*)memset(malloc(_size), 0, _size);
     for (ui64 i = 0; i < table_size >> 4; i++)
         for (ui32 j = 1, k = 0; j; j <<= 1, k++)
             if (ptr[i].infobyte & j)
-                insert(ptr[i].space[k].key, ptr[i].space[k].value), ptr[i].space[k].key.~Key(), ptr[i].space[k].value.~Value();
+                operator[](ptr[i].space[k].key) = ptr[i].space[k].value;
     free(ptr);
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::find(const Key &key) const -> Value *
+inline auto pyc::Namespace<Key, Value>::find(const Key& key) const -> Value*
 {
     if (!this->table_size)
         return nullptr;
     ui32 bit_idx = 1, idx = 0;
-    bucket &b = table[Modulo(key.hash(), table_size)];
+    bucket& b = table[Modulo(key.hash(), table_size)];
     if (!b.infobyte)
         return nullptr;
     while (bit_idx)
@@ -95,38 +97,38 @@ inline auto pyc::Namespace<Key, Value>::find(const Key &key) const -> Value *
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &value) -> Value &
+inline auto pyc::Namespace<Key, Value>::insert(const Key& key, const Value& value) -> Value&
 {
     if (!table_size)
         resize();
     ui32 bit_idx = 1, idx = 0, hash_value = key.hash();
-    bucket &b = table[Modulo(hash_value, table_size)];
+    bucket* b = &table[Modulo(hash_value, table_size)];
     while (true)
     {
-        if (b.infobyte == -1)
+        if (b->infobyte == -1)
         {
             resize();
             // code.1
             bit_idx = 1, idx = 0;
-            b = table[Modulo(hash_value, table_size)];
+            b = &table[hash_value % table_size];
             continue;
 
             /* code.2
             return insert(key, value);
             */
         }
-        while (bit_idx & b.infobyte)
+        while (bit_idx & b->infobyte)
             bit_idx <<= 1, idx++;
-        b.infobyte |= bit_idx;
-        b.space[idx].key = key;
-        return (b.space[idx].value = value);
+        b->infobyte |= bit_idx;
+        b->space[idx].key = key;
+        return (b->space[idx].value = value);
     }
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::operator[](const Key &key) -> Value &
+auto pyc::Namespace<Key, Value>::operator[](const Key& key) -> Value&
 {
-    Value *ptr = nullptr;
+    Value* ptr = nullptr;
     if ((ptr = find(key)))
         return *ptr;
     return insert(key, Value());
