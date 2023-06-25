@@ -110,7 +110,7 @@ inline auto pyc::Namespace<Key, Value>::insert(const Key& key, const Value& valu
             resize();
             // code.1
             bit_idx = 1, idx = 0;
-            b = &table[hash_value % table_size];
+            b = &table[Modulo(hash_value, table_size)];
             continue;
 
             /* code.2
