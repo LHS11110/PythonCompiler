@@ -1,5 +1,5 @@
 CXX=g++
-CFLAGS=-std=c++20
+CFLAGS=-std=c++20 -O2
 OBJS=namespace.o
 
 main.out: $(OBJS) $(source)
