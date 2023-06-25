@@ -74,7 +74,7 @@ inline auto pyc::Namespace<Key, Value>::resize(void) -> void
     for (ui64 i = 0; i < table_size >> 4; i++)
         for (ui32 j = 1, k = 0; j; j <<= 1, k++)
             if (ptr[i].infobyte & j)
-                operator[](ptr[i].space[k].key) = ptr[i].space[k].value;
+                insert(ptr[i].space[k].key, ptr[i].space[k].value), ptr[i].space[k].key.~Key(), ptr[i].space[k].value.~Value();
     free(ptr);
 }
 
