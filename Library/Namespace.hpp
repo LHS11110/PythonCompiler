@@ -35,7 +35,7 @@ namespace pyc
     public:
         Namespace(void);
         ~Namespace(void);
-        auto operator[](const Key &) -> Value &;
+        inline auto operator[](const Key &) -> Value &;
     };
 }
 
@@ -124,7 +124,7 @@ inline auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &valu
 }
 
 template <typename Key, typename Value>
-auto pyc::Namespace<Key, Value>::operator[](const Key &key) -> Value &
+inline auto pyc::Namespace<Key, Value>::operator[](const Key &key) -> Value &
 {
     if (!table_size)
         resize();
