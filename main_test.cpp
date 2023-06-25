@@ -40,10 +40,10 @@ auto main(void) -> int
     pyc::Namespace<integer, int> m;
     clock_t s = clock();
     for (int i = 0; i < 10000000; i++)
-        m.insert(i, i);
+        m[i] = i;
     std::cout << ((float)(clock() - s) / 1000000) << '\n';
     std::cout << m.table_size << '\n';
-    std::cout << m[10000000] << '\n';
+    std::cout << m[999999] << '\n';
 
     return 0;
 }
