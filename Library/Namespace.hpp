@@ -13,7 +13,7 @@ namespace pyc
     template <typename Key, typename Value>
     class Namespace
     {
-    public:
+    private:
         struct keyAndValue
         {
             Key key;
@@ -31,6 +31,7 @@ namespace pyc
         inline auto resize(void) -> void;
         inline auto find(const Key &) const -> Value *;
         inline auto insert(const Key &, const Value &) -> Value &;
+        inline auto size(void) const -> ui64;
 
     public:
         Namespace(void);
@@ -121,6 +122,12 @@ inline auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &valu
         b->space[idx].key = key;
         return (b->space[idx].value = value);
     }
+}
+
+template <typename Key, typename Value>
+inline auto pyc::Namespace<Key, Value>::size(void) const -> ui64
+{
+    return table_size;
 }
 
 template <typename Key, typename Value>
