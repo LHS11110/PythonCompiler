@@ -2,7 +2,7 @@ from typing import Callable, Any
 
 
 def code_match(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
     obj_list: list[
         Callable[[list[tuple[str, str]], int], tuple[dict[str, Any], int]]
@@ -12,7 +12,7 @@ def code_match(
 
     for object in obj_list:
         try:
-            expr, _idx = object(codes, idx)
+            expr, _idx = object(tokens, idx)
             if _idx > expr_tuple[1]:  # 표현식이 더 많이 매칭된 경우
                 expr_tuple = (expr, _idx)
         except:  # 매칭될 수 없는 경우
