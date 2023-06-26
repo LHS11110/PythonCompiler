@@ -49,5 +49,5 @@ def cleanup(codes: list[tuple[str, str]]) -> list[tuple[str, str]]:
     return result
 
 
-def isEndOfLine(codes: list[tuple[str, str]]) -> bool:
+def isEOL(codes: list[tuple[str, str]]) -> bool:
     return codes[-1][0] == "EOL"
