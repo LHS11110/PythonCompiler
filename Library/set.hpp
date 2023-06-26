@@ -56,9 +56,10 @@ pyc::set<Key, Value>::~set()
                 if (table[i].infobyte & j)
                     table[i].space[k].key.~Key(), table[i].space[k].value.~Value();
         free(table);
-        free(table_size);
-        table = table_size = nullptr;
     }
+    if (table_size)
+        free(table_size);
+    table = table_size = nullptr;
 }
 
 template <typename Key, typename Value>
