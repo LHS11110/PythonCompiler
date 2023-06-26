@@ -19,7 +19,7 @@ class Pattern:
         return self.patterns.__iter__()
 
 
-def tokenize(input_text: str) -> list[tuple[str, str]]:
+def lexical_analyze(input_text: str) -> list[tuple[str, str]]:
     tokens: list[tuple[str, str]] = []
     pos: int = 0
     length: int = len(input_text)
@@ -45,4 +45,4 @@ def tokenize(input_text: str) -> list[tuple[str, str]]:
 
 if __name__ == "__main__":
     input_text: str = input("input code : ")
-    print(tokenize(input_text=input_text))
+    print(lexical_analyze(input_text=input_text))
