@@ -1,4 +1,4 @@
-#include "Library/Namespace.hpp"
+#include "Library/set.hpp"
 #include <iostream>
 #include <time.h>
 #include <unordered_map>
@@ -37,7 +37,7 @@ public:
 
 auto main(void) -> int
 {
-    pyc::Namespace<integer, int> m;
+    pyc::set<integer, int> m;
     int e;
     cin >> e;
     clock_t s = clock();

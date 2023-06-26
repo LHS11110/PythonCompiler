@@ -1,5 +1,5 @@
-#ifndef _NAMESPACE_HPP
-#define _NAMESPACE_HPP
+#ifndef _SET_HPP
+#define _SET_HPP
 #define Modulo(X, Y) ((unsigned long long)X & ((unsigned long long)Y - 1)) // X % Y, (Y == 2^n)
 #include <cstdlib>
 #include <memory.h>
@@ -11,7 +11,7 @@ typedef const char *_str;
 namespace pyc
 {
     template <typename Key, typename Value>
-    class Namespace
+    class set
     {
     private:
         struct keyAndValue
@@ -34,20 +34,20 @@ namespace pyc
         inline auto size(void) const -> ui64;
 
     public:
-        Namespace(void);
-        ~Namespace(void);
+        set(void);
+        ~set(void);
         inline auto operator[](const Key &) -> Value &;
     };
 }
 
 template <typename Key, typename Value>
-pyc::Namespace<Key, Value>::Namespace()
+pyc::set<Key, Value>::set()
     : table(nullptr), table_size(0)
 {
 }
 
 template <typename Key, typename Value>
-pyc::Namespace<Key, Value>::~Namespace()
+pyc::set<Key, Value>::~set()
 {
     if (table)
     {
@@ -60,7 +60,7 @@ pyc::Namespace<Key, Value>::~Namespace()
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::resize(void) -> void
+inline auto pyc::set<Key, Value>::resize(void) -> void
 {
     if (table_size == 0)
     {
@@ -78,7 +78,7 @@ inline auto pyc::Namespace<Key, Value>::resize(void) -> void
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::find(const Key &key) const -> Value *
+inline auto pyc::set<Key, Value>::find(const Key &key) const -> Value *
 {
     if (!this->table_size)
         return nullptr;
@@ -96,7 +96,7 @@ inline auto pyc::Namespace<Key, Value>::find(const Key &key) const -> Value *
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &value) -> Value &
+inline auto pyc::set<Key, Value>::insert(const Key &key, const Value &value) -> Value &
 {
     if (!table_size)
         resize();
@@ -125,13 +125,13 @@ inline auto pyc::Namespace<Key, Value>::insert(const Key &key, const Value &valu
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::size(void) const -> ui64
+inline auto pyc::set<Key, Value>::size(void) const -> ui64
 {
     return table_size;
 }
 
 template <typename Key, typename Value>
-inline auto pyc::Namespace<Key, Value>::operator[](const Key &key) -> Value &
+inline auto pyc::set<Key, Value>::operator[](const Key &key) -> Value &
 {
     if (!table_size)
         resize();
