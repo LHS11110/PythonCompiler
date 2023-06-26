@@ -5,21 +5,21 @@ import Modules.Parser.Expression as Expression
 
 
 def getTuple(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
 ) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
-    if codes[idx][0] != "LPAREN":  # '(' 검사
+    if tokens[idx][0] != "LPAREN":  # '(' 검사
         raise SyntaxError()
     idx += 1
     tree["Category"] = "Object"
     tree["ObjectType"] = "Tuple"
     tree["Elements"] = []
     count: int = 0  # 구분자와 표현식 순서를 파악하는데 사용할 변수
-    while codes[idx][0] != "RPAREN":  # ')'가 온다면
+    while tokens[idx][0] != "RPAREN":  # ')'가 온다면
         if not count % 2:  # 표현식 검사
             element, idx = Checker.code_match(
-                codes=codes,
+                tokens=tokens,
                 idx=idx,
                 obj_list=Object.default_obj
                 + default_container
@@ -28,7 +28,7 @@ def getTuple(
             tree["Elements"].append(element)  # type: ignore
             count += 1
 
-        elif count % 2 and codes[idx][0] != "COMMA":  # 구분자 검사
+        elif count % 2 and tokens[idx][0] != "COMMA":  # 구분자 검사
             raise SyntaxError()
 
         else:  # 구분자가 올바르다면
@@ -39,21 +39,21 @@ def getTuple(
 
 
 def getSet(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
 ) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
-    if codes[idx][0] != "LBRACE":
+    if tokens[idx][0] != "LBRACE":
         raise SyntaxError()
     idx += 1
     tree["Category"] = "Object"
     tree["ObjectType"] = "Set"
     tree["Elements"] = []
     count: int = 0
-    while codes[idx][0] != "RBRACE":
+    while tokens[idx][0] != "RBRACE":
         if not count % 2:
             element, idx = Checker.code_match(
-                codes=codes,
+                tokens=tokens,
                 idx=idx,
                 obj_list=Object.default_obj
                 + default_container
@@ -62,7 +62,7 @@ def getSet(
             tree["Elements"].append(element)  # type: ignore
             count += 1
 
-        elif count % 2 and codes[idx][0] != "COMMA":
+        elif count % 2 and tokens[idx][0] != "COMMA":
             raise SyntaxError()
 
         else:
@@ -73,21 +73,21 @@ def getSet(
 
 
 def getList(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
 ) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
-    if codes[idx][0] != "LSQB":
+    if tokens[idx][0] != "LSQB":
         raise SyntaxError()
     idx += 1
     tree["Category"] = "Object"
     tree["ObjectType"] = "List"
     tree["Elements"] = []
     count: int = 0
-    while codes[idx][0] != "RSQB":
+    while tokens[idx][0] != "RSQB":
         if not count % 2:
             element, idx = Checker.code_match(
-                codes=codes,
+                tokens=tokens,
                 idx=idx,
                 obj_list=Object.default_obj
                 + default_container
@@ -96,7 +96,7 @@ def getList(
             tree["Elements"].append(element)  # type: ignore
             count += 1
 
-        elif count % 2 and codes[idx][0] != "COMMA":
+        elif count % 2 and tokens[idx][0] != "COMMA":
             raise SyntaxError()
 
         else:
@@ -107,11 +107,11 @@ def getList(
 
 
 def getDict(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
 ) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
-    if codes[idx][0] != "LBRACE":
+    if tokens[idx][0] != "LBRACE":
         raise SyntaxError()
     idx += 1
     tree["Category"] = "Object"
@@ -120,24 +120,24 @@ def getDict(
     count: int = 0
 
     def getKeyAndValue(
-        codes: list[tuple[str, str]],
+        tokens: list[tuple[str, str]],
         idx: int,
     ) -> tuple[dict[str, Any], int]:
         tree: dict[str, Any] = {}
         tree["Category"] = "Object"
         tree["ObjectType"] = "KeyAndValue"
         expr, idx = Checker.code_match(
-            codes=codes,
+            tokens=tokens,
             idx=idx,
             obj_list=Object.default_obj
             + default_container
             + Expression.default_expression,
         )
         tree["Key"] = expr
-        assert codes[idx][0] == "COLON", ""
+        assert tokens[idx][0] == "COLON", ""
         idx += 1
         expr, idx = Checker.code_match(
-            codes=codes,
+            tokens=tokens,
             idx=idx,
             obj_list=Object.default_obj
             + default_container
@@ -146,13 +146,13 @@ def getDict(
         tree["Value"] = expr
         return (tree, idx)
 
-    while codes[idx][0] != "RBRACE":
+    while tokens[idx][0] != "RBRACE":
         if not count % 2:
-            element, idx = getKeyAndValue(codes=codes, idx=idx)
+            element, idx = getKeyAndValue(tokens=tokens, idx=idx)
             tree["Elements"].append(element)  # type: ignore
             count += 1
 
-        elif count % 2 and codes[idx][0] != "COMMA":
+        elif count % 2 and tokens[idx][0] != "COMMA":
             raise SyntaxError()
 
         else:
@@ -163,7 +163,7 @@ def getDict(
 
 
 def getEnum(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
     obj_list: list[
         Callable[
@@ -182,20 +182,20 @@ def getEnum(
     count: int = 0
     error_idx: int = idx
     while True:
-        if codes[idx][0] == "INDENT":
+        if tokens[idx][0] == "INDENT":
             idx += 1
 
         elif not count % 2:
             try:
                 element, idx = Checker.code_match(
-                    codes=codes, idx=idx, obj_list=obj_list
+                    tokens=tokens, idx=idx, obj_list=obj_list
                 )
                 tree["Elements"].append(element)  # type: ignore
                 count += 1
             except:
                 break
 
-        elif count % 2 and codes[idx][0] != "COMMA":
+        elif count % 2 and tokens[idx][0] != "COMMA":
             break
 
         else:
