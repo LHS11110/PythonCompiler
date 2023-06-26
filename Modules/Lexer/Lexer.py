@@ -4,19 +4,17 @@ import re
 from re import Match
 
 
-class Pattern:
+class Token:
     def __init__(self) -> None:
         self.idx: int = 0
-        self.patterns: list[tuple[str, str]] = []
+        self.tokens: list[tuple[str, str]] = []
         with open("Grammer/tokens.txt", "r") as file:
-            patterns: list[list[str]] = [
-                line.split() for line in file.read().split("\n")
-            ]
-        for pattern in patterns:
-            self.patterns.append((" ".join(pattern[1:]), pattern[0]))
+            tokens: list[list[str]] = [line.split() for line in file.read().split("\n")]
+        for token in tokens:
+            self.tokens.append((" ".join(token[1:]), token[0]))
 
     def __iter__(self) -> Iterator[tuple[str, str]]:
-        return self.patterns.__iter__()
+        return self.tokens.__iter__()
 
 
 def lexical_analyze(input_text: str) -> list[tuple[str, str]]:
@@ -25,8 +23,8 @@ def lexical_analyze(input_text: str) -> list[tuple[str, str]]:
     length: int = len(input_text)
     while pos < length:
         match_list: list[tuple[str, str]] = []
-        for pattern, token_type in Pattern():
-            match: Optional[Match[Any]] = re.match(pattern, input_text[pos:])
+        for token, token_type in Token():
+            match: Optional[Match[Any]] = re.match(token, input_text[pos:])
             if not match:
                 continue
             match_list.append((token_type, match.group()))
