@@ -6,7 +6,7 @@ using namespace std;
 
 class integer
 {
-private:
+public:
     int num;
 
 public:
@@ -38,12 +38,14 @@ public:
 auto main(void) -> int
 {
     pyc::Namespace<integer, int> m;
+    int e;
+    cin >> e;
     clock_t s = clock();
-    for (int i = 0; i < 10000000; i++)
+    for (int i = 0; i < e; i++)
         m[i] = i;
-    std::cout << ((float)(clock() - s) / 1000000) << '\n';
-    std::cout << m.table_size << '\n';
-    std::cout << m[999999] << '\n';
+    std::cout << ((float)(clock() - s) / CLOCKS_PER_SEC) << '\n';
+    std::cout << m.size() << '\n';
+    cout << "\n\n";
 
     return 0;
 }
