@@ -16,28 +16,28 @@ with open("Grammer/priority.txt", "r") as file:
             priority[category].append(list(value for value in word_list))
 
 
-def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
-    assert codes[idx][0] == "LSQB", ""
+def getIndexing(tokens: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+    assert tokens[idx][0] == "LSQB", ""
     idx += 1
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "Indexing"
     tree["Elements"] = []
     count: int = 0
-    while codes[idx][0] != "RSQB":
+    while tokens[idx][0] != "RSQB":
         if not count % 2:
-            if codes[idx][0] == "COLON":  # 슬라이싱에서 객체가 생략됬다면
+            if tokens[idx][0] == "COLON":  # 슬라이싱에서 객체가 생략됬다면
                 tree["Elements"].append({})  # type: ignore
             else:
                 element, idx = Checker.code_match(
-                    codes=codes,
+                    tokens=tokens,
                     idx=idx,
                     obj_list=Object.default_obj + Container.default_container,
                 )
                 tree["Elements"].append(element)  # type: ignore
             count += 1
 
-        elif count % 2 and codes[idx][0] != "COLON":
+        elif count % 2 and tokens[idx][0] != "COLON":
             raise SyntaxError()
 
         else:
@@ -53,10 +53,10 @@ def getIndexing(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
     return (tree, idx + 1)
 
 
-def getCall(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getCall(tokens: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     expr, idx = Checker.code_match(
-        codes=codes,
+        tokens=tokens,
         idx=idx,
         obj_list=[
             Container.getTuple,
@@ -68,12 +68,12 @@ def getCall(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int
     return (tree, idx)
 
 
-def getTernaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getTernaryOp(tokens: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "TernaryOp"
     for op, next_syntax, _priority in priority["TernaryOperator"]:
-        if codes[idx][0] == op:
+        if tokens[idx][0] == op:
             tree["Op"] = op
             tree["NextSyntax"] = [next_syntax]
             tree["Priority"] = int(_priority)
@@ -84,12 +84,12 @@ def getTernaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any]
     return (tree, idx + 1)
 
 
-def getBinaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getBinaryOp(tokens: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "BinaryOp"
     for op, _priority in priority["BinaryOperator"]:
-        if codes[idx][0] == op:
+        if tokens[idx][0] == op:
             tree["Op"] = op
             tree["Priority"] = int(_priority)
             break
@@ -100,13 +100,13 @@ def getBinaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any],
 
 
 def getPostUnaryOp(
-    codes: list[tuple[str, str]], idx: int
+    tokens: list[tuple[str, str]], idx: int
 ) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "PostUnaryOp"
     expr, idx = Checker.code_match(
-        codes=codes,
+        tokens=tokens,
         idx=idx,
         obj_list=[
             getCall,
@@ -126,12 +126,14 @@ def getPostUnaryOp(
     return (tree, idx)
 
 
-def getPreUnaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getPreUnaryOp(
+    tokens: list[tuple[str, str]], idx: int
+) -> tuple[dict[str, Any], int]:
     tree: dict[str, Any] = {}
     tree["Category"] = "Expression"
     tree["ObjectType"] = "PreUnaryOp"
     for op, _priority in priority["PreUnaryOperator"]:
-        if codes[idx][0] == op:
+        if tokens[idx][0] == op:
             tree["Op"] = op
             tree["Priority"] = int(_priority)
             break
@@ -141,9 +143,9 @@ def getPreUnaryOp(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any
     return (tree, idx + 1)
 
 
-def getOperand(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
+def getOperand(tokens: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], int]:
     tree, idx = Checker.code_match(
-        codes=codes,
+        tokens=tokens,
         idx=idx,
         obj_list=Object.default_obj + Container.default_container,
     )
@@ -152,7 +154,7 @@ def getOperand(codes: list[tuple[str, str]], idx: int) -> tuple[dict[str, Any], 
 
 
 def getExpr(
-    codes: list[tuple[str, str]],
+    tokens: list[tuple[str, str]],
     idx: int,
 ) -> tuple[dict[str, Any], int]:
     stack: list[dict[str, Any]] = []
@@ -191,23 +193,23 @@ def getExpr(
 
     while True:
         if state == 0:  # 전위 단항 또는 피연산자
-            if codes[idx][0] == "LPAREN":
+            if tokens[idx][0] == "LPAREN":
                 stack.append({"Op": "LPAREN"})
                 idx += 1
                 continue
             try:
-                expr, idx = getPreUnaryOp(codes=codes, idx=idx)
+                expr, idx = getPreUnaryOp(tokens=tokens, idx=idx)
                 stack.append(expr)
                 state = 0
             except:
-                expr, idx = getOperand(codes=codes, idx=idx)
+                expr, idx = getOperand(tokens=tokens, idx=idx)
                 tree["ExprList"].append(expr)  # type: ignore
                 state = 1
         elif state == 1:  # 후위 단항 또는 next_syntax
             if len(syntax_stack) > 0:
-                if codes[idx][0] == syntax_stack[-1][1]:  # 토큰이 n항 연산자의 다음 문법과 동일한 경우
+                if tokens[idx][0] == syntax_stack[-1][1]:  # 토큰이 n항 연산자의 다음 문법과 동일한 경우
                     state = 0
-                    syntax_check_stack.append(codes[idx][0])
+                    syntax_check_stack.append(tokens[idx][0])
                     idx += 1
                     while len(stack) > 0:
                         if (
@@ -217,25 +219,25 @@ def getExpr(
                         tree["ExprList"].append(stack.pop())  # type: ignore
                     syntax_stack.pop()
                     continue
-            if codes[idx][0] == "RPAREN":
+            if tokens[idx][0] == "RPAREN":
                 while stack[-1]["Op"] != "LPAREN":
                     tree["ExprList"].append(stack.pop())  # type: ignore
                 idx += 1
                 stack.pop()
                 continue
             try:
-                expr, idx = getPostUnaryOp(codes=codes, idx=idx)
+                expr, idx = getPostUnaryOp(tokens=tokens, idx=idx)
                 push(expr=expr)
                 state = 1
             except:
                 state = 2
         elif state == 2:  # 이항 또는 삼항 연산자
             try:
-                expr, idx = getBinaryOp(codes=codes, idx=idx)
+                expr, idx = getBinaryOp(tokens=tokens, idx=idx)
                 push(expr=expr)
             except:
                 try:
-                    expr, idx = getTernaryOp(codes=codes, idx=idx)
+                    expr, idx = getTernaryOp(tokens=tokens, idx=idx)
                     push(expr=expr)
                     syntax_list = [expr["Op"], *expr["NextSyntax"]]
                     syntax_list = [
