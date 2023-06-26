@@ -2,7 +2,7 @@ TernaryOperator
     IF      ELSE        16
 
 BinaryOperator
-    DOT        2
+    DOT                 2
     DMULTIPLY           4
     MULTIPLY            6
     DIVIDE              6
