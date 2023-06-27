@@ -47,5 +47,11 @@ auto main(void) -> int
     std::cout << m->size() << '\n';
     cout << "\n\n";
 
+    s = clock();
+    for (int i = 0; i < e; i++)
+        m->remove(i);
+    std::cout << ((float)(clock() - s) / CLOCKS_PER_SEC) << '\n';
+    cout << m->operator[](213) << '\n';
+
     return 0;
 }
