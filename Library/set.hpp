@@ -145,8 +145,9 @@ inline auto pyc::set<Key, Value>::remove(const Key &key) const -> void
     {
         if ((bit_idx & b.infobyte) && b.space[idx].key == key) // 해당 위치의 비트가 활성화되있고 key가 같은 경우
         {
-            b.space[idx].value.~Value();
-            b.infobyte &= ~bit_idx;
+            b.space[idx].key.~Key();
+            b.space[idx].value.~Value(); // 소멸자 명시 호출
+            b.infobyte &= ~bit_idx;      // 해당 위치의 비트 비활성화
             return;
         }
         bit_idx <<= 1, idx++;
