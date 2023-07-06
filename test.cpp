@@ -39,5 +39,8 @@ auto main(void) -> int
 {
     pyc::set<integer, int> &m = *new pyc::set<integer, int>();
 
+    clock_t s = clock();
+    cout << float(clock() - s) / CLOCKS_PER_SEC << '\n';
+
     return 0;
 }
